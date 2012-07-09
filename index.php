@@ -3,7 +3,7 @@
 Plugin Name: Advanced Settings
 Plugin URI: http://tutzstyle.com/portfolio/advanced-settings/
 Description: Some of settings to WordPress.
-Version: 0.9
+Version: 0.9.3
 Author: Arthur Araújo
 Author URI: http://tutzstyle.com
 */
