@@ -3,7 +3,7 @@ Contributors: webarthur
 Tags: settings, option, admin, menu, page, image, setting, images, google, analytics, compress, html, thumbnail, post type
 Requires at least: 3.0
 Tested up to: 3.4.1
-Stable tag: 0.9.4
+Stable tag: 1.0
 License: GPLv2 or later
 Provide some advanced settings that are not provided by WordPress by default
 
@@ -11,6 +11,7 @@ Provide some advanced settings that are not provided by WordPress by default
 
 This is an essential plugin for your WordPress websites:
 
+* Insert author bio on each post
 * Hide top WP admin bar
 * Remove HTML comments
 * Compact HTML code

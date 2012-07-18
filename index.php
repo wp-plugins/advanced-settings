@@ -3,7 +3,7 @@
 Plugin Name: Advanced Settings
 Plugin URI: http://tutzstyle.com/portfolio/advanced-settings/
 Description: Provide some advanced settings that are not provided by WordPress by default
-Version: 0.9.4
+Version: 1.0
 Author: Arthur Araújo
 Author URI: http://tutzstyle.com
 */
@@ -15,6 +15,22 @@ if( $_POST && is_admin() ) {
 	if( wp_verify_nonce( $_POST['_wpnonce'], 'pc' ) )
 		update_option( 'powerconfigs', $_POST );
 }
+
+# MENU
+add_action('admin_menu', '__advanced_settings_menu');
+function __advanced_settings_menu() {
+	add_options_page('Advanced settings', 'Advanced', 'manage_options', 'advanced-settings', '__advanced_settings_page');
+}
+
+# Add plugin option in Plugins page
+function __advsettings_plugin_action_links( $links, $file ) {
+	if ( $file == plugin_basename( basename(dirname(__FILE__)).'/index.php' ) ) {
+		$links[] = '<a href="options-general.php?page=power-configs-plugin">'.__('Settings').'</a>';
+	}
+
+	return $links;
+}
+add_filter( 'plugin_action_links', '__advsettings_plugin_action_links', 10, 2 );
 
 $configs = get_option('powerconfigs');
 #print_r($configs);
@@ -123,19 +139,41 @@ if( $configs['show_query_num'] ) {
 	add_action('wp_footer', '__show_sql_query_num');
 }
 
+# Remove [...] from the excerpt
+/*if( $configs['remove_etc'] ) {
+	function __trim_excerpt( $text ) {
+		return rtrim( $text, '[...]' );
+	}
+	add_filter('get_the_excerpt', '__trim_excerpt');
+}*/
+
+# author_bio
+if( $configs['author_bio'] ) {
+	function __get_author_bio ($content=''){
+		return  '<div id="entry-author-info">
+					<div id="author-avatar">
+						'. get_avatar( get_the_author_meta( 'user_email' ), apply_filters( 'twentyten_author_bio_avatar_size', 60 ) ) .'
+					</div>
+					<div id="author-description">
+						<h2>'. sprintf( __( 'About %s' ), get_the_author() ) .'</h2>
+						'. get_the_author_meta( 'description' ) .'
+						<div id="author-link">
+							<a href="'. get_author_posts_url( get_the_author_meta( 'ID' ) ) .'">
+								'. sprintf( __( 'View all posts by %s <span class="meta-nav">&rarr;</span>', 'twentyten' ), get_the_author() ) .'
+							</a>
+						</div>
+					</div>
+				</div>';
+	}
+	add_filter('the_content', '__get_author_bio');
+}
+
 
 // -----------------------------------------------------------------------
 
 
-
-# MENU
-add_action('admin_menu', 'powerconfigs_menu');
-function powerconfigs_menu() {
-	add_options_page('Advanced settings', 'Advanced', 'manage_options', 'power-configs-plugin', 'powerconfigs_page');
-}
-
 # THE PAGE
-function powerconfigs_page() { $configs = get_option('powerconfigs'); ?>
+function __advanced_settings_page() { $configs = get_option('powerconfigs'); ?>
 	
 	<div class="wrap">
 
@@ -184,6 +222,19 @@ function powerconfigs_page() { $configs = get_option('powerconfigs'); ?>
 			<br />
 			<label for="jpeg_quality">
 				Set JPEG quality to <input name="jpeg_quality" type="text" size="2" maxlength="3" id="jpeg_quality" value="<?php echo (int)$configs['jpeg_quality'] ?>" /> <i style="color:#999">(when send and resize images)</i></label>
+			
+			<br />
+			
+	<h3 class="title">Contents</h3>
+			
+			<label for="author_bio">
+				<input name="author_bio" type="checkbox" id="author_bio" value="1" <?php if($configs['author_bio']) echo 'checked="checked"' ?> />
+				Insert author bio on each post</label>			
+			
+			<!--br />
+			<label for="remove_etc">
+				<input name="remove_etc" type="checkbox" id="remove_etc" value="1" <?php if($configs['remove_etc']) echo 'checked="checked"' ?> />
+				Remove the [...] from the excerpt</label>
 			
 			<!--br />
 	<h3 class="title">Contents</h3>
@@ -236,4 +287,3 @@ function powerconfigs_page() { $configs = get_option('powerconfigs'); ?>
 }
 
 ?>
-
