@@ -1,9 +1,9 @@
 === Advanced Settings ===
 Contributors: webarthur
-Tags: settings, option, admin, menu, page, image, setting, images, google, analytics, compress, html, thumbnail, post type
+Tags: settings, option, admin, menu, page, image, setting, images, google, analytics, compress, html, thumbnail, post type, auto save, seo, keywords, favicon
 Requires at least: 3.0
 Tested up to: 3.4.1
-Stable tag: 1.0
+Stable tag: 1.1 
 License: GPLv2 or later
 Provide some advanced settings that are not provided by WordPress by default
 
@@ -12,13 +12,19 @@ Provide some advanced settings that are not provided by WordPress by default
 This is an essential plugin for your WordPress websites:
 
 * Insert author bio on each post
+* Add description and keywords meta tags in posts (SEO)
+* Get the blog description and add a description meta tag
+* Automatically add a FavIcon
 * Hide top WP admin bar
 * Remove HTML comments
 * Compact HTML code
+* Disable Posts Auto Saving
 * Insert google analytics code
 * Remove header WordPress generator tag
 * Remove header WLW Manifest tag
 * Display total number of executed SQL queries
+* Display page loading time
+* Remove "texturize" (remove wptexturize filters)
 * Add thumbnail support
 * Set JPEG quality
 * Fix post type pagination 
