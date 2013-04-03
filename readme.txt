@@ -3,7 +3,7 @@ Contributors: webarthur
 Tags: settings, option, admin, menu, page, image, setting, images, google, analytics, compress, html, thumbnail, post type, auto save, seo, keywords, favicon, feedburner, compact
 Requires at least: 3.0
 Tested up to: 3.5.1
-Stable tag: 1.2
+Stable tag: 1.4
 License: GPLv2 or later
 Some advanced settings that are not provided by WordPress by default
 
