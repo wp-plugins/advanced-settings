@@ -1,11 +1,11 @@
 === Advanced Settings ===
 Contributors: webarthur
-Tags: settings, option, admin, menu, page, image, setting, images, google, analytics, compress, html, thumbnail, post type, auto save, seo, keywords, favicon
+Tags: settings, option, admin, menu, page, image, setting, images, google, analytics, compress, html, thumbnail, post type, auto save, seo, keywords, favicon, feedburner, compact
 Requires at least: 3.0
-Tested up to: 3.4.1
-Stable tag: 1.1 
+Tested up to: 3.5.1
+Stable tag: 1.2
 License: GPLv2 or later
-Provide some advanced settings that are not provided by WordPress by default
+Some advanced settings that are not provided by WordPress by default
 
 == Description ==
 
@@ -17,6 +17,7 @@ This is an essential plugin for your WordPress websites:
 * Automatically add a FavIcon
 * Hide top WP admin bar
 * Remove HTML comments
+* Easy FeedBurner configuration
 * Compact HTML code
 * Disable Posts Auto Saving
 * Insert google analytics code
