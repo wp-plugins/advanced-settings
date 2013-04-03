@@ -1,9 +1,9 @@
 === Advanced Settings ===
 Contributors: webarthur
-Tags: settings, option, admin, menu, page, image, setting, images, google, analytics, compress, html, thumbnail, post type, auto save, seo, keywords, favicon, feedburner, compact
+Tags: settings, option, admin, menu, page, image, setting, images, google, analytics, compress, html, thumbnail, post type, auto save, seo, keywords, favicon, feedburner, compact, comments, remove comments, hide comments
 Requires at least: 3.0
 Tested up to: 3.5.1
-Stable tag: 1.4
+Stable tag: 1.4.1
 License: GPLv2 or later
 Some advanced settings that are not provided by WordPress by default
 
@@ -11,6 +11,7 @@ Some advanced settings that are not provided by WordPress by default
 
 This is an essential plugin for your WordPress websites:
 
+* Remove comments system
 * Insert author bio on each post
 * Add description and keywords meta tags in posts (SEO)
 * Get the blog description and add a description meta tag

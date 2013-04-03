@@ -1,9 +1,10 @@
 <?php
+
 /*
 Plugin Name: Advanced Settings
 Plugin URI: http://tutzstyle.com/portfolio/advanced-settings/
 Description: Some advanced settings that are not provided by WordPress by default
-Version: 1.4
+Version: 1.4.1
 Author: Arthur Araújo
 Author URI: http://tutzstyle.com
 */
@@ -191,6 +192,38 @@ if( isset($configs['compress']) || isset($configs['remove_comments']) ) {
 }
 
 # Google Analytics
+if( isset($configs['remove_comments']) ) {
+	function __av_comments_close( $open, $post_id ) {
+
+		#$post = get_post( $post_id );
+		#if ( 'page' == $post->post_type )
+			#$open = false;
+
+		return false;
+	}
+	add_filter( 'comments_open', '__av_comments_close', 10, 2 );
+	
+	function __av_empty_comments_array( $open, $post_id ) {
+		return array();
+	}
+	add_filter( 'comments_array', '__av_empty_comments_array', 10, 2 );
+
+	// Removes from admin menu
+	function __av_remove_admin_menus() {
+		remove_menu_page( 'edit-comments.php' );
+	}
+	add_action( 'admin_menu', '__av_remove_admin_menus' );
+	
+	// Removes from admin bar
+	function __av_admin_bar_render() {
+		global $wp_admin_bar;
+		$wp_admin_bar->remove_menu('comments');
+	}
+	add_action( 'wp_before_admin_bar_render', '__av_admin_bar_render' );
+
+}
+	
+# Google Analytics
 if( isset($configs['analytics']) ) {
 	add_action('wp_footer', '____analytics'); // Load custom styles
 	function ____analytics(){ 
@@ -333,20 +366,14 @@ function __advanced_settings_page() { $configs = get_option('powerconfigs'); ?>
 				<input name="author_bio" type="checkbox" id="author_bio" value="1" <?php if(isset($configs['author_bio'])) echo 'checked="checked"' ?> />
 				Insert author bio on each post</label>			
 			
-			<!--br />
-			<label for="remove_etc">
-				<input name="remove_etc" type="checkbox" id="remove_etc" value="1" <?php if(isset($configs['remove_etc'])) echo 'checked="checked"' ?> />
-				Remove the [...] from the excerpt</label>
+			<br />
 			
-			<!--br />
-	<h3 class="title">Contents</h3>
-			
-			<label for="rel_external">
-				<input name="rel_external" type="checkbox" id="rel_external" value="1" <?php if(isset($configs['rel_external'])) echo 'checked="checked"' ?> />
-				<span style="color:red">COLOCAR JAVASCRIPT</span> Replaces <span style="color:red">target="_blank"</span> to <span style="color:red">rel="external"</span> <i style="color:#999">(this is for W3C validator, a javascript code replace to target="_blank" again)</i>
-				</label-->
+			<label for="remove_comments">
+				<input name="remove_comments" type="checkbox" id="remove_comments" value="1" <?php if(isset($configs['remove_comments'])) echo 'checked="checked"' ?> />
+				Remove comments system</label>			
 			
 			<br />
+			
 	<h3 class="title">System</h3>
 			
 			<label for="post_type_pag">
