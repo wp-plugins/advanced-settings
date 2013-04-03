@@ -2,8 +2,8 @@
 /*
 Plugin Name: Advanced Settings
 Plugin URI: http://tutzstyle.com/portfolio/advanced-settings/
-Description: Provide some advanced settings that are not provided by WordPress by default
-Version: 1.1
+Description: Some advanced settings that are not provided by WordPress by default
+Version: 1.2
 Author: Arthur Araújo
 Author URI: http://tutzstyle.com
 */
@@ -42,6 +42,19 @@ $configs = get_option('powerconfigs');
 # Remove admin menu
 if( isset($configs['remove_menu']) )
 	add_filter('show_admin_bar' , '__return_false'); // Remove admin menu
+
+# Configure FeedBurner
+if( isset($configs['feedburner']) )
+	function appthemes_custom_rss_feed( $output, $feed ) {
+		if ( strpos( $output, 'comments' ) )
+			return $output;
+		
+		if( strpos($configs['feedburner'], '/')===FALSE )
+			return esc_url( 'http://feeds.feedburner.com/'.$configs['feedburner'] );
+		else
+			return esc_url( $configs['feedburner'] );
+	}
+	add_action( 'feed_link', 'appthemes_custom_rss_feed', 10, 2 );
 
 # Favicon
 if( isset($configs['favicon']) ) {
@@ -347,6 +360,11 @@ function __advanced_settings_page() { $configs = get_option('powerconfigs'); ?>
 			<label for="disable_auto_save">
 				<input name="disable_auto_save" type="checkbox" id="disable_auto_save" value="1" <?php if($configs['disable_auto_save']) echo 'checked="checked"' ?> />
 				Disable Posts Auto Saving
+				</label>
+			
+			<br />
+			<label for="disable_auto_save">
+				FeedBurner: <input name="analytics" type="text" size="12" id="analytics" value="<?php echo $configs['feedburner'] ?>" />
 				</label>
 			
 			<br />
