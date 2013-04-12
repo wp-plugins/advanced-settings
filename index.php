@@ -4,7 +4,7 @@
 Plugin Name: Advanced Settings
 Plugin URI: http://tutzstyle.com/portfolio/advanced-settings/
 Description: Some advanced settings that are not provided by WordPress by default
-Version: 1.4.1
+Version: 1.4.3
 Author: Arthur Araújo
 Author URI: http://tutzstyle.com
 */
@@ -181,7 +181,7 @@ if( isset($configs['compress']) || isset($configs['remove_comments']) ) {
 			$code = preg_replace('/<!--(.|\s)*?-->/', '', $code); 
 
 		if( $configs['compress'] )
-			$code = trim( preg_replace( '/\s+/', ' ', $code ) );
+			$code = trim( preg_replace( '/\s+(?![^<>]*<\/pre>)/', ' ', $code ) );
 
 		/* Acentos */
 		#$code = str_encode( $code );
