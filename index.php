@@ -4,7 +4,7 @@
 Plugin Name: Advanced Settings
 Plugin URI: http://tutzstyle.com/portfolio/advanced-settings/
 Description: Some advanced settings that are not provided by WordPress by default
-Version: 1.4.3
+Version: 1.4.4
 Author: Arthur Araújo
 Author URI: http://tutzstyle.com
 */
@@ -272,7 +272,7 @@ if( isset($configs['show_query_num']) ) {
 # author_bio
 if( isset($configs['author_bio']) ) {
 	function __get_author_bio ($content=''){
-		return  '<div id="entry-author-info">
+		return $content.' <div id="entry-author-info">
 					<div id="author-avatar">
 						'. get_avatar( get_the_author_meta( 'user_email' ), apply_filters( 'twentyten_author_bio_avatar_size', 60 ) ) .'
 					</div>
