@@ -1,22 +1,24 @@
 === Advanced Settings ===
 Contributors: webarthur
-Tags: settings, option, admin, menu, page, image, setting, images, google, analytics, compress, html, thumbnail, post type, auto save, seo, keywords, favicon
+Tags: settings, option, admin, menu, page, image, setting, images, google, analytics, compress, html, thumbnail, post type, auto save, seo, keywords, favicon, feedburner, compact, comments, remove comments, hide comments, author
 Requires at least: 3.0
-Tested up to: 3.4.1
-Stable tag: 1.1 
+Tested up to: 3.5.1
+Stable tag: 1.4.5
 License: GPLv2 or later
-Provide some advanced settings that are not provided by WordPress by default
+Some advanced settings that are not provided by WordPress by default
 
 == Description ==
 
 This is an essential plugin for your WordPress websites:
 
+* Remove comments system
 * Insert author bio on each post
 * Add description and keywords meta tags in posts (SEO)
 * Get the blog description and add a description meta tag
 * Automatically add a FavIcon
 * Hide top WP admin bar
 * Remove HTML comments
+* Easy FeedBurner configuration
 * Compact HTML code
 * Disable Posts Auto Saving
 * Insert google analytics code
@@ -43,3 +45,18 @@ Upload plugin to your blog, activate it, then click on the Settings > Advanced o
 2. screenshot-2.png 
 
 
+== Changelog ==
+
+= 1.4.5 =
+* Increase the size of author thumbnail to 100
+
+= 1.4.4 =
+* Fix the "Insert author bio on each post".
+
+= 1.4.3 =
+* Code compactor now skips the <pre> tag.
+
+
+== Donate ==
+* PayPal: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=74ABCDCXE7YEJ
+* PagSeguro UOL: https://pagseguro.uol.com.br/checkout/v2/donation.html?receiverEmail=tutzstyle@gmail.com&currency=BRL
