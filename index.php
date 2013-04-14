@@ -1,9 +1,10 @@
 <?php
+
 /*
 Plugin Name: Advanced Settings
 Plugin URI: http://tutzstyle.com/portfolio/advanced-settings/
-Description: Provide some advanced settings that are not provided by WordPress by default
-Version: 1.1
+Description: Some advanced settings that are not provided by WordPress by default
+Version: 1.4.4
 Author: Arthur Araújo
 Author URI: http://tutzstyle.com
 */
@@ -29,7 +30,7 @@ function __advanced_settings_menu() {
 # Add plugin option in Plugins page
 function __advsettings_plugin_action_links( $links, $file ) {
 	if ( $file == plugin_basename( basename(dirname(__FILE__)).'/index.php' ) ) {
-		$links[] = '<a href="options-general.php?page=power-configs-plugin">'.__('Settings').'</a>';
+		$links[] = '<a href="options-general.php?page=advanced-settings">'.__('Settings').'</a>';
 	}
 
 	return $links;
@@ -42,6 +43,22 @@ $configs = get_option('powerconfigs');
 # Remove admin menu
 if( isset($configs['remove_menu']) )
 	add_filter('show_admin_bar' , '__return_false'); // Remove admin menu
+
+# Configure FeedBurner
+if( isset($configs['feedburner']) ) {
+	function appthemes_custom_rss_feed( $output, $feed ) {
+		$configs = get_option('powerconfigs');
+		
+		if ( strpos( $output, 'comments' ) )
+			return $output;
+		
+		if( strpos($configs['feedburner'], '/')===FALSE )
+			return esc_url( 'http://feeds.feedburner.com/'.$configs['feedburner'] );
+		else
+			return esc_url( $configs['feedburner'] );
+	}
+	add_action( 'feed_link', 'appthemes_custom_rss_feed', 10, 2 );
+}
 
 # Favicon
 if( isset($configs['favicon']) ) {
@@ -164,7 +181,7 @@ if( isset($configs['compress']) || isset($configs['remove_comments']) ) {
 			$code = preg_replace('/<!--(.|\s)*?-->/', '', $code); 
 
 		if( $configs['compress'] )
-			$code = trim( preg_replace( '/\s+/', ' ', $code ) );
+			$code = trim( preg_replace( '/\s+(?![^<>]*<\/pre>)/', ' ', $code ) );
 
 		/* Acentos */
 		#$code = str_encode( $code );
@@ -174,6 +191,38 @@ if( isset($configs['compress']) || isset($configs['remove_comments']) ) {
 	}
 }
 
+# Google Analytics
+if( isset($configs['remove_comments']) ) {
+	function __av_comments_close( $open, $post_id ) {
+
+		#$post = get_post( $post_id );
+		#if ( 'page' == $post->post_type )
+			#$open = false;
+
+		return false;
+	}
+	add_filter( 'comments_open', '__av_comments_close', 10, 2 );
+	
+	function __av_empty_comments_array( $open, $post_id ) {
+		return array();
+	}
+	add_filter( 'comments_array', '__av_empty_comments_array', 10, 2 );
+
+	// Removes from admin menu
+	function __av_remove_admin_menus() {
+		remove_menu_page( 'edit-comments.php' );
+	}
+	add_action( 'admin_menu', '__av_remove_admin_menus' );
+	
+	// Removes from admin bar
+	function __av_admin_bar_render() {
+		global $wp_admin_bar;
+		$wp_admin_bar->remove_menu('comments');
+	}
+	add_action( 'wp_before_admin_bar_render', '__av_admin_bar_render' );
+
+}
+	
 # Google Analytics
 if( isset($configs['analytics']) ) {
 	add_action('wp_footer', '____analytics'); // Load custom styles
@@ -223,7 +272,7 @@ if( isset($configs['show_query_num']) ) {
 # author_bio
 if( isset($configs['author_bio']) ) {
 	function __get_author_bio ($content=''){
-		return  '<div id="entry-author-info">
+		return $content.' <div id="entry-author-info">
 					<div id="author-avatar">
 						'. get_avatar( get_the_author_meta( 'user_email' ), apply_filters( 'twentyten_author_bio_avatar_size', 60 ) ) .'
 					</div>
@@ -267,47 +316,42 @@ function __advanced_settings_page() { $configs = get_option('powerconfigs'); ?>
 			
 			<label for="remove_menu">
 
-				<input name="remove_menu" type="checkbox" id="remove_menu" value="1" <?php if($configs['remove_menu']) echo 'checked="checked"' ?>>
+				<input name="remove_menu" type="checkbox" id="remove_menu" value="1" <?php if( isset($configs['remove_menu'])) echo 'checked="checked"' ?>>
 				Hide admin menu </label>
-			
-			<!--br />
-			<label for="remove_update_msg">
-				<input name="remove_update_msg" type="checkbox" id="remove_update_msg" value="1" <?php if($configs['remove_update_msg']) echo 'checked="checked"' ?> />
-				<span style="color:red">NÃO FUNCIONA</span> Hide update message from admin</label-->
 			
 			<br />
 			<label for="favicon">
-				<input name="favicon" type="checkbox" id="favicon" value="1" <?php if($configs['favicon']) echo 'checked="checked"' ?> />
+				<input name="favicon" type="checkbox" id="favicon" value="1" <?php if(isset($configs['favicon'])) echo 'checked="checked"' ?> />
 				Automatically add a FavIcon <i style="color:#999">(when there is a favicon.ico or favicon.png file in the template folder)</i></label>
 				</label>
 			
 			<br />
 			<label for="description">
-				<input name="description" type="checkbox" id="description" value="1" <?php if($configs['description']) echo 'checked="checked"' ?> />
+				<input name="description" type="checkbox" id="description" value="1" <?php if(isset($configs['description'])) echo 'checked="checked"' ?> />
 				Get the blog description and add a description meta tag
 				</label>
 			
 			<br />
 			<label for="single_metas">
-				<input name="single_metas" type="checkbox" id="single_metas" value="1" <?php if($configs['single_metas']) echo 'checked="checked"' ?> />
+				<input name="single_metas" type="checkbox" id="single_metas" value="1" <?php if(isset($configs['single_metas'])) echo 'checked="checked"' ?> />
 				Add description and keywords meta tags in posts (SEO)
 				</label>
 			
 			<br />
 			<label for="remove_generator">
-				<input name="remove_generator" type="checkbox" id="remove_generator" value="1" <?php if($configs['remove_generator']) echo 'checked="checked"' ?> />
+				<input name="remove_generator" type="checkbox" id="remove_generator" value="1" <?php if(isset($configs['remove_generator'])) echo 'checked="checked"' ?> />
 				Remove header WordPress generator meta tag (html)</label>
 			
 			<br />
 			<label for="remove_wlw">
-				<input name="remove_wlw" type="checkbox" id="remove_wlw" value="1" <?php if($configs['remove_wlw']) echo 'checked="checked"' ?> />
+				<input name="remove_wlw" type="checkbox" id="remove_wlw" value="1" <?php if(isset($configs['remove_wlw'])) echo 'checked="checked"' ?> />
 				Remove header WLW Manifest meta tag (Windows Live Writer link)</label>
 			
 			<br />
 	<h3 class="title">Images</h3>
 			
 			<label for="add_thumbs">
-				<input name="add_thumbs" type="checkbox" id="add_thumbs" value="1" <?php if($configs['add_thumbs']) echo 'checked="checked"' ?> />
+				<input name="add_thumbs" type="checkbox" id="add_thumbs" value="1" <?php if(isset($configs['add_thumbs'])) echo 'checked="checked"' ?> />
 				Add thumbnail support</label>
 			
 			<br />
@@ -319,34 +363,33 @@ function __advanced_settings_page() { $configs = get_option('powerconfigs'); ?>
 	<h3 class="title">Contents</h3>
 			
 			<label for="author_bio">
-				<input name="author_bio" type="checkbox" id="author_bio" value="1" <?php if($configs['author_bio']) echo 'checked="checked"' ?> />
+				<input name="author_bio" type="checkbox" id="author_bio" value="1" <?php if(isset($configs['author_bio'])) echo 'checked="checked"' ?> />
 				Insert author bio on each post</label>			
 			
-			<!--br />
-			<label for="remove_etc">
-				<input name="remove_etc" type="checkbox" id="remove_etc" value="1" <?php if($configs['remove_etc']) echo 'checked="checked"' ?> />
-				Remove the [...] from the excerpt</label>
+			<br />
 			
-			<!--br />
-	<h3 class="title">Contents</h3>
-			
-			<label for="rel_external">
-				<input name="rel_external" type="checkbox" id="rel_external" value="1" <?php if($configs['rel_external']) echo 'checked="checked"' ?> />
-				<span style="color:red">COLOCAR JAVASCRIPT</span> Replaces <span style="color:red">target="_blank"</span> to <span style="color:red">rel="external"</span> <i style="color:#999">(this is for W3C validator, a javascript code replace to target="_blank" again)</i>
-				</label-->
+			<label for="remove_comments">
+				<input name="remove_comments" type="checkbox" id="remove_comments" value="1" <?php if(isset($configs['remove_comments'])) echo 'checked="checked"' ?> />
+				Remove comments system</label>			
 			
 			<br />
+			
 	<h3 class="title">System</h3>
 			
 			<label for="post_type_pag">
-				<input name="post_type_pag" type="checkbox" id="post_type_pag" value="1" <?php if($configs['post_type_pag']) echo 'checked="checked"' ?> />
+				<input name="post_type_pag" type="checkbox" id="post_type_pag" value="1" <?php if(isset($configs['post_type_pag'])) echo 'checked="checked"' ?> />
 				Fix post type pagination
 				</label>
 			
 			<br />
 			<label for="disable_auto_save">
-				<input name="disable_auto_save" type="checkbox" id="disable_auto_save" value="1" <?php if($configs['disable_auto_save']) echo 'checked="checked"' ?> />
+				<input name="disable_auto_save" type="checkbox" id="disable_auto_save" value="1" <?php if(isset($configs['disable_auto_save'])) echo 'checked="checked"' ?> />
 				Disable Posts Auto Saving
+				</label>
+			
+			<br />
+			<label for="feedburner">
+				FeedBurner: <input name="feedburner" type="text" size="12" id="feedburner" value="<?php if(isset($configs['feedburner'])) echo $configs['feedburner'] ?>" />
 				</label>
 			
 			<br />
@@ -354,19 +397,19 @@ function __advanced_settings_page() { $configs = get_option('powerconfigs'); ?>
 	<h3 class="title">HTML Code output</h3>
 			
 			<label for="compress">
-				<input name="compress" type="checkbox" id="compress" value="1" <?php if($configs['compress']) echo 'checked="checked"' ?> />
+				<input name="compress" type="checkbox" id="compress" value="1" <?php if(isset($configs['compress'])) echo 'checked="checked"' ?> />
 				Compress all code
 				</label>
 			
 			<br />
 			<label for="remove_wptexturize">
-				<input name="remove_wptexturize" type="checkbox" id="remove_wptexturize" value="1" <?php if($configs['remove_wptexturize']) echo 'checked="checked"' ?> />
+				<input name="remove_wptexturize" type="checkbox" id="remove_wptexturize" value="1" <?php if(isset($configs['remove_wptexturize'])) echo 'checked="checked"' ?> />
 				Remove "texturize" <i style="color:#999">(transformations of quotes to smart quotes, apostrophes, dashes, ellipses, the trademark symbol, and the multiplication symbol)</i>
 				</label>
 			
 			<br />
 			<label for="remove_comments">
-				<input name="remove_comments" type="checkbox" id="remove_comments" value="1" <?php if($configs['remove_comments']) echo 'checked="checked"' ?> />
+				<input name="remove_comments" type="checkbox" id="remove_comments" value="1" <?php if(isset($configs['remove_comments'])) echo 'checked="checked"' ?> />
 				Remove all HTML comments
 				</label>
 			
@@ -374,7 +417,7 @@ function __advanced_settings_page() { $configs = get_option('powerconfigs'); ?>
 	<h3 class="title">Footer</h3>
 			
 			<label for="show_query_num">
-				<input name="show_query_num" type="checkbox" id="show_query_num" value="1" <?php if($configs['show_query_num']) echo 'checked="checked"' ?> />
+				<input name="show_query_num" type="checkbox" id="show_query_num" value="1" <?php if(isset($configs['show_query_num'])) echo 'checked="checked"' ?> />
 				Display total number of executed SQL queries and page loading time <i style="color:#999">(only admin users can see this)</i>
 				</label>
 			
