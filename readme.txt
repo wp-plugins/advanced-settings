@@ -3,7 +3,7 @@ Contributors: webarthur
 Tags: settings, option, admin, menu, page, image, setting, images, google, analytics, compress, html, thumbnail, post type, auto save, seo, keywords, favicon, feedburner, compact, comments, remove comments, hide comments, author
 Requires at least: 3.0
 Tested up to: 3.5.1
-Stable tag: 1.4.4
+Stable tag: 1.4.5
 License: GPLv2 or later
 Some advanced settings that are not provided by WordPress by default
 
@@ -46,6 +46,9 @@ Upload plugin to your blog, activate it, then click on the Settings > Advanced o
 
 
 == Changelog ==
+
+= 1.4.5 =
+* Increase the size of author thumbnail to 100
 
 = 1.4.4 =
 * Fix the "Insert author bio on each post".
