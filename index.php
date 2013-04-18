@@ -4,7 +4,7 @@
 Plugin Name: Advanced Settings
 Plugin URI: http://tutzstyle.com/portfolio/advanced-settings/
 Description: Some advanced settings that are not provided by WordPress by default
-Version: 1.4.5
+Version: 1.4.6
 Author: Arthur Araújo
 Author URI: http://tutzstyle.com
 */
@@ -191,8 +191,8 @@ if( isset($configs['compress']) || isset($configs['remove_comments']) ) {
 	}
 }
 
-# Google Analytics
-if( isset($configs['remove_comments']) ) {
+# Remove comments system
+if( isset($configs['remove_comments_system']) ) {
 	function __av_comments_close( $open, $post_id ) {
 
 		#$post = get_post( $post_id );
@@ -368,9 +368,9 @@ function __advanced_settings_page() { $configs = get_option('powerconfigs'); ?>
 			
 			<br />
 			
-			<label for="remove_comments">
-				<input name="remove_comments" type="checkbox" id="remove_comments" value="1" <?php if(isset($configs['remove_comments'])) echo 'checked="checked"' ?> />
-				Remove comments system</label>			
+			<label for="remove_comments_system">
+				<input name="remove_comments_system" type="checkbox" id="remove_comments_system" value="1" <?php if(isset($configs['remove_comments_system'])) echo 'checked="checked"' ?> />
+				Remove comments system</label>
 			
 			<br />
 			

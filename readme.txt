@@ -3,7 +3,7 @@ Contributors: webarthur
 Tags: settings, option, admin, menu, page, image, setting, images, google, analytics, compress, html, thumbnail, post type, auto save, seo, keywords, favicon, feedburner, compact, comments, remove comments, hide comments, author
 Requires at least: 3.0
 Tested up to: 3.5.1
-Stable tag: 1.4.5
+Stable tag: 1.4.6
 License: GPLv2 or later
 Some advanced settings that are not provided by WordPress by default
 
@@ -41,20 +41,23 @@ Upload plugin to your blog, activate it, then click on the Settings > Advanced o
 
 == Screenshots ==
 
-1. screenshot-1.png 
-2. screenshot-2.png 
+1. Menu
+2. The admin page 
 
 
 == Changelog ==
 
+= 1.4.6 =
+* Fix the "Remove comments system" bug
+
 = 1.4.5 =
-* Increase the size of author thumbnail to 100
+* Increase the size of author thumbnail to 100px
 
 = 1.4.4 =
-* Fix the "Insert author bio on each post".
+* Fix the "Insert author bio on each post"
 
 = 1.4.3 =
-* Code compactor now skips the <pre> tag.
+* Code compactor now skips the &lt;pre> tag
 
 
 == Donate ==
