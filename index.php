@@ -592,7 +592,7 @@ function advset_page() { //$configs = get_option('powerconfigs'); ?>
 		
 		<?php
 			$external_plugin_name = 'Advanced Settings';
-			$external_plugin_url = 'http://wordpress.org/extend/plugins/advanced-settings/';
+			$external_plugin_url = 'http://tutzstyle.com/portfolio/advanced-settings/';
 		?>
 		<div style="float:right;width:400px">
 			<div style="float:right; margin-top:10px">
