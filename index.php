@@ -5,12 +5,18 @@ Plugin URI: http://tutzstyle.com/portfolio/advanced-settings/
 Description: Some advanced settings that are not provided by WordPress
 Author: Arthur Araújo
 Author URI: http://tutzstyle.com
-Version: 1.5
+Version: 1.5.1
 */
 
 # TO IMPLEMENT
 // Allow HTML in user profiles  
 // remove_filter('pre_user_description', 'wp_filter_kses');  
+
+//Disable The “Please Update Now” Message On WordPress Dashboard
+/*if (0&&!current_user_can('edit_users')) {
+  add_action( 'init', create_function( '$a', "remove_action( 'init', 'wp_version_check' );" ), 2 );
+  add_filter( 'pre_option_update_core', create_function( '$a', "return null;" ) );
+}*/
 
 if( is_admin() ) {
 
@@ -25,6 +31,10 @@ if( is_admin() ) {
 	
 		function advset_update() {
 			
+			// security
+			if( !current_user_can('manage_options') )
+				return false;
+
 			$_POST['powerconfigs'] = $_POST;
 			unset(
 				$_POST['powerconfigs']['option_page'],
@@ -37,7 +47,9 @@ if( is_admin() ) {
 			if( $_POST['powerconfigs']['auto_thumbs'] )
 				$_POST['powerconfigs']['add_thumbs'] = '1';
 			
-			// save fields
+			$_POST['powerconfigs']['remove_filters'] = advset_option( 'remove_filters' );
+			
+			// save settings
 			register_setting( 'advanced-settings', 'powerconfigs' );
 			
 		}
@@ -46,6 +58,19 @@ if( is_admin() ) {
 	
 }
 
+// save a advanced-settings option (using only by admin filters page)
+function advset_save_option( $option_name, $value='' ) {
+	global $advset_options;
+	
+	if( !isset($advset_options) )
+		$advset_options = get_option('powerconfigs');
+	
+	$advset_options[$option_name] = $value;
+	
+	update_option( 'powerconfigs', $advset_options );
+}
+
+// get a advanced-settings option
 function advset_option( $option_name, $default='' ) {
 	global $advset_options;
 	
@@ -71,7 +96,8 @@ function __show_sqlnum() {
 
 # ADMIN MENU
 function advset_menu() {
-	add_options_page('Advanced settings', 'Advanced', 'manage_options', 'advanced-settings', 'advset_page');
+	add_options_page(__('Advanced settings'), __('Advanced'), 'manage_options', 'advanced-settings', 'advset_page');
+	add_options_page(__('Filters/Actions'), __('Filters/Actions'), 'manage_options', 'advanced-settings-filters', 'advset_page_filters');
 }
 
 # Add plugin option in Plugins page
@@ -526,6 +552,18 @@ if( $_POST && (advset_option('max_image_size_w')>0 || advset_option('max_image_s
 	
 }
 
+# remove filters if not in filters admin page
+$remove_filters = advset_option( 'remove_filters' );
+if( !isset($_GET['page'])
+	|| $_GET['page']!='advanced-settings-filters' && is_array($remove_filters) ) {
+	
+	if( isset($remove_filters) && is_array($remove_filters) )
+		foreach( $remove_filters as $tag=>$array )
+			if( is_array($array) )
+				foreach( $array as $function=>$_ )
+					//echo "$tag=>".$function.'<br />';
+					remove_filter( $tag, $function );
+}
 
 // translate to pt_BR
 if( is_admin() && defined('WPLANG') && WPLANG=='pt_BR' ) {
@@ -533,6 +571,8 @@ if( is_admin() && defined('WPLANG') && WPLANG=='pt_BR' ) {
 	global $advset_ptbr;
 	
 	$advset_ptbr = array(
+		'Be careful, removing a filter can destabilize your system. For security reasons, no filter removal has efects over this page.' => 'Cuidado! Remover um filtro pode desestabilizar seu sistema. Por segurança, nenhum filtro removido terá efeito nesta página.',
+		'Filters/Actions' => 'Filtros/Ações',
 		'Save changes' => 'Salvar alterações',
 		'width' => 'largura',
 		'height' => 'altura',
@@ -584,8 +624,110 @@ function advset_translate( $text ) {
 
 // -----------------------------------------------------------------------
 
+add_action('wp_ajax_advset_filters', 'prefix_ajax_advset_filters');
+function prefix_ajax_advset_filters() {
+    //echo $_POST['tag'].' - '.$_POST['function'];
+    
+    // security
+    if( !current_user_can('manage_options') )
+		return false;
+    
+    $remove_filters = (array) advset_option( 'remove_filters' );
+    $tag = (string)$_POST['tag'];
+    $function = (string)$_POST['function'];
+    
+    if( $_POST['enable']=='true' )
+		unset($remove_filters[$tag][$function]);
+    else if ( $_POST['enable']=='false' )
+		$remove_filters[$tag][$function] = 1;
+    
+    advset_save_option( 'remove_filters', $remove_filters );
+    
+    //echo $_POST['enable'];
+    
+    return true;
+}
 
-# THE AMIND PAGE
+# THE ADMIN FILTERS PAGE
+function advset_page_filters() { ?>
+	
+	<div class="wrap">
+		
+		<?php
+			$external_plugin_name = 'Advanced Settings';
+			$external_plugin_url = 'http://tutzstyle.com/portfolio/advanced-settings/';
+		?>
+		<div style="float:right;width:400px">
+			<div style="float:right; margin-top:10px">
+				 <iframe src="http://www.facebook.com/plugins/like.php?href=<?php echo urlencode($external_plugin_url) ?>&amp;layout=box_count&amp;show_faces=false&amp;width=450&amp;action=like&amp;font=arial&amp;colorscheme=light&amp;height=21"
+					scrolling="no" frameborder="0" style="overflow:hidden; width:90px; height:61px; margin:0 0 0 10px; float:right" allowTransparency="true"></iframe>
+					<strong style="line-height:25px;">
+						<?php echo __("Do you like <a href=\"{$external_plugin_url}\" target=\"_blank\">{$external_plugin_name}</a> Plugin? "); ?>
+					</strong>
+			</div>
+		</div>
+		
+		<div id="icon-options-general" class="icon32"><br></div>
+		<h2><?php _e('Filters/Actions') ?> <sub style="color:red">beta</sub></h2>
+		
+		<div>&nbsp;</div>
+		
+		<div id="message" class="error"><?php _e('Be careful, removing a filter can destabilize your system. For security reasons, no filter removal has efects over this page.') ?></div>
+		
+		<?php
+		global $wp_filter;
+		
+		$hook=$wp_filter;
+		ksort($hook);
+		
+		$remove_filters = (array) advset_option( 'remove_filters' );
+		
+		//print_r($remove_filters);
+		
+		echo '<table id="advset_filters" style="font-size:90%">
+			<tr><td>&nbsp;</td><td><strong>'.__('priority').'</strong></td></tr>';
+		
+		foreach($hook as $tag => $priority){
+			echo "<tr><th align='left'>[<a target='_blank' href='http://wpseek.com/$tag/'>$tag</a>]</th></tr>";
+			ksort($priority);
+			foreach($priority as $priority => $function){
+				foreach($function as $function => $properties) {
+					
+					$checked = isset($remove_filters[$tag][$function]) ? '': "checked='checked'";
+					
+					echo "<tr><td> <label><input type='checkbox' name='$tag' value='$function' $checked />
+						$function</label>
+						<sub><a target='_blank' href='http://wpseek.com/$function/'>help</a></sub></td>
+						<td align='right'>$priority</td></tr>";
+					}
+			}
+			echo '<tr><td>&nbsp;</td></tr>';
+		}
+		echo '</table>';
+		?>
+		
+		<script>
+		jQuery('#advset_filters input').click(function(){
+			jQuery.post( '<?php echo admin_url('admin-ajax.php'); ?>',
+				  {
+					  'action':'advset_filters',
+					  'tag':this.name,
+					  'function':this.value,
+					  'enable':this.checked
+				   }, 
+				   function(response){
+					 //alert('The server responded: ' + response);
+				   }
+			);
+		});
+		</script>
+			
+	</div>
+	<?php
+}
+
+
+# THE ADMIN PAGE
 function advset_page() { //$configs = get_option('powerconfigs'); ?>
 	
 	<div class="wrap">
@@ -605,7 +747,7 @@ function advset_page() { //$configs = get_option('powerconfigs'); ?>
 		</div>
 		
 		<div id="icon-options-general" class="icon32"><br></div>
-		<h2>Advanced settings</h2>
+		<h2><?php _e('Advanced Settings'); ?></h2>
 		
 		<form action="options.php" method="post">
 			
@@ -787,7 +929,7 @@ function advset_page() { //$configs = get_option('powerconfigs'); ?>
 			<p class="submit"><input type="submit" name="submit" id="submit" class="button-primary" value="<?php _e('Save changes') ?>"></p>	
 		</form>
 	</div>
-	<?
+	<?php
 }
 
 ?>
