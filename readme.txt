@@ -14,7 +14,7 @@ Some advanced settings that are not provided by WordPress
 
 This is an essential plugin for your WordPress websites:
 
-* Remove especific actions/filters
+* Remove specific actions/filters
 * Resize image at upload
 * Automatically generate the Post Thumbnail
 * Remove comments system
