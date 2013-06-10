@@ -6,7 +6,7 @@ Plugin URI: http://tutzstyle.com/portfolio/advanced-settings/
 Tags: settings, hacks, option, admin, menu, page, image, setting, images, google, analytics, compress, html, thumbnail, post type, auto save, seo, keywords, favicon, feedburner, compact, comments, remove comments, hide comments, author, resize at upload, auto post thumbnails, filters
 Requires at least: 3.0
 Tested up to: 3.5.1
-Stable tag: 1.5.1
+Stable tag: 1.5.2
 License: GPLv2 or later
 Some advanced settings that are not provided by WordPress
 
@@ -14,7 +14,7 @@ Some advanced settings that are not provided by WordPress
 
 This is an essential plugin for your WordPress websites:
 
-* Remove specific actions/filters
+* Remove a specific system action or filter
 * Resize image at upload
 * Automatically generate the Post Thumbnail
 * Remove comments system

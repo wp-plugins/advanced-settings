@@ -5,7 +5,7 @@ Plugin URI: http://tutzstyle.com/portfolio/advanced-settings/
 Description: Some advanced settings that are not provided by WordPress
 Author: Arthur Araújo
 Author URI: http://tutzstyle.com
-Version: 1.5.1
+Version: 1.5.2
 */
 
 # TO IMPLEMENT
@@ -822,11 +822,11 @@ function advset_page() { //$configs = get_option('powerconfigs'); ?>
 							<?php _e('Resize image at upload to max size') ?>:
 							<br />
 							<label for="max_image_size_w">
-							&nbsp; &nbsp; &bull; <?php _e('width') ?> (px) <input name="max_image_size_w" type="text" size="2" maxlength="3" id="max_image_size_w" value="<?php echo (int) advset_option( 'max_image_size_w', 0) ?>" />
+							&nbsp; &nbsp; &bull; <?php _e('width') ?> (px) <input name="max_image_size_w" type="text" size="3" maxlength="5" id="max_image_size_w" value="<?php echo (int) advset_option( 'max_image_size_w', 0) ?>" />
 								<i style="color:#999">(<?php _e('if zero resize to max height or dont resize if both is zero') ?>)</i></label>
 							<label for="max_image_size_h">
 							<br />
-							&nbsp; &nbsp; &bull; <?php _e('height') ?> (px) <input name="max_image_size_h" type="text" size="2" maxlength="3" id="max_image_size_h" value="<?php echo (int) advset_option( 'max_image_size_h', 0) ?>" />
+							&nbsp; &nbsp; &bull; <?php _e('height') ?> (px) <input name="max_image_size_h" type="text" size="3" maxlength="5" id="max_image_size_h" value="<?php echo (int) advset_option( 'max_image_size_h', 0) ?>" />
 								<i style="color:#999">(<?php _e('if zero resize to max width or dont resize if both is zero') ?>)</i></label>
 						
 					</td>
