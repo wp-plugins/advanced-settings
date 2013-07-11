@@ -3,10 +3,10 @@ Contributors: webarthur
 Donate link: http://tutzstyle.com/donate/
 Author URI: http://tutzstyle.com/
 Plugin URI: http://tutzstyle.com/portfolio/advanced-settings/
-Tags: settings, hacks, option, admin, menu, page, image, setting, images, google, analytics, compress, html, thumbnail, post type, auto save, seo, keywords, favicon, feedburner, compact, comments, remove comments, hide comments, author, resize at upload, auto post thumbnails, filters
+Tags: settings, hacks, option, admin, menu, page, image, setting, images, google, analytics, compress, html, thumbnail, post type, auto save, seo, keywords, favicon, feedburner, compact, comments, remove comments, hide comments, author, resize at upload, auto post thumbnails, filters, widget
 Requires at least: 3.0
-Tested up to: 3.5.1
-Stable tag: 1.5.2
+Tested up to: 3.5.2
+Stable tag: 1.5.3
 License: GPLv2 or later
 Some advanced settings that are not provided by WordPress
 
@@ -14,6 +14,9 @@ Some advanced settings that are not provided by WordPress
 
 This is an essential plugin for your WordPress websites:
 
+* Disable The “Please Update Now” Message On WordPress Dashboard
+* Unregister default WordPress widgets
+* Remove widget system
 * Remove a specific system action or filter
 * Resize image at upload
 * Automatically generate the Post Thumbnail
@@ -58,6 +61,12 @@ Upload plugin to your blog, activate it, then click on the Settings > Advanced o
 
 
 == Changelog ==
+
+= 1.5.3 =
+* Disable The “Please Update Now” Message On WordPress Dashboard
+* Unregister default WordPress widgets
+* Remove widget system
+* The comment filter don't remove conditional IE comments now
 
 = 1.5.1 =
 * Actions/Filter admin page

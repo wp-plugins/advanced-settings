@@ -5,18 +5,12 @@ Plugin URI: http://tutzstyle.com/portfolio/advanced-settings/
 Description: Some advanced settings that are not provided by WordPress
 Author: Arthur Araújo
 Author URI: http://tutzstyle.com
-Version: 1.5.2
+Version: 1.5.3
 */
 
 # TO IMPLEMENT
 // Allow HTML in user profiles  
 // remove_filter('pre_user_description', 'wp_filter_kses');  
-
-//Disable The “Please Update Now” Message On WordPress Dashboard
-/*if (0&&!current_user_can('edit_users')) {
-  add_action( 'init', create_function( '$a', "remove_action( 'init', 'wp_version_check' );" ), 2 );
-  add_filter( 'pre_option_update_core', create_function( '$a', "return null;" ) );
-}*/
 
 if( is_admin() ) {
 
@@ -46,6 +40,9 @@ if( is_admin() ) {
 			
 			if( $_POST['powerconfigs']['auto_thumbs'] )
 				$_POST['powerconfigs']['add_thumbs'] = '1';
+			
+			if( $_POST['powerconfigs']['remove_widget_system'] )
+				$_POST['powerconfigs']['remove_default_wp_widgets'] = '1';
 			
 			$_POST['powerconfigs']['remove_filters'] = advset_option( 'remove_filters' );
 			
@@ -111,6 +108,11 @@ function advset_plugin_action_links( $links, $file ) {
 
 //$configs = get_option('powerconfigs');
 #print_r($configs);
+
+# Disable The “Please Update Now” Message On WordPress Dashboard
+if ( advset_option('hide_update_message') ) {
+  add_action( 'admin_menu', create_function( null, "remove_action( 'admin_notices', 'update_nag', 3 );" ), 2 );
+}
 
 # Remove admin menu
 if( advset_option('remove_menu') )
@@ -246,8 +248,15 @@ if( advset_option('compress') || advset_option('remove_comments') ) {
 	function ____template() { ob_start('____template2'); }
 	function ____template2($code) {
 		
+		# dont remove conditional IE comments "<!--[if IE]>"
 		if( advset_option('remove_comments') )
-			$code = preg_replace('/<!--(.|\s)*?-->/', '', $code); 
+			$code = preg_replace('/<!--[^\[\>\<](.|\s)*?-->/', '', $code);
+			/* exemples:
+			 * <!--[if IE]>
+			 * <!--<![endif]-->
+			 * <!--[if gt IE 9]><!--> [html code] ...
+			 * old code replaced: $code = preg_replace('/<!--(.|\s)*?-->/', '', $code);
+			 * */
 
 		if( advset_option('compress') )
 			$code = trim( preg_replace( '/\s+(?![^<>]*<\/pre>)/', ' ', $code ) );
@@ -356,6 +365,57 @@ if( advset_option('author_bio') ) {
 # author_bio
 if( advset_option('author_bio_html') )
 	remove_filter('pre_user_description', 'wp_filter_kses');
+
+# remove_widget_system
+if( advset_option('remove_default_wp_widgets') || advset_option('remove_widget_system') ) {
+	
+	function advset_unregister_default_wp_widgets() {
+		unregister_widget('WP_Widget_Pages');
+		unregister_widget('WP_Widget_Calendar');
+		unregister_widget('WP_Widget_Archives');
+		unregister_widget('WP_Widget_Links');
+		unregister_widget('WP_Widget_Meta');
+		unregister_widget('WP_Widget_Search');
+		unregister_widget('WP_Widget_Text');
+		unregister_widget('WP_Widget_Categories');
+		unregister_widget('WP_Widget_Recent_Posts');
+		unregister_widget('WP_Widget_Recent_Comments');
+		unregister_widget('WP_Widget_RSS');
+		unregister_widget('WP_Widget_Tag_Cloud');
+	}
+	add_action('widgets_init', 'advset_unregister_default_wp_widgets', 1);
+}
+
+# remove_widget_system
+if( advset_option('remove_widget_system') ) {
+
+	# this maybe dont work properly
+	function advset_remove_widget_support() {
+		remove_theme_support( 'widgets' );
+	}
+	add_action( 'after_setup_theme', 'advset_remove_widget_support', 11 ); 
+	
+	# it works fine
+	function advset_remove_widget_system() {
+		global $wp_widget_factory;
+		$wp_widget_factory->widgets = array();
+		
+	}
+	add_action('widgets_init', 'advset_remove_widget_system', 1);
+	
+	# this maybe dont work properly
+	function disable_all_widgets( $sidebars_widgets ) { 
+		$sidebars_widgets = array( false ); 
+		return $sidebars_widgets; 
+	}
+	add_filter( 'sidebars_widgets', 'disable_all_widgets' ); 
+	
+	# remove widgets from menu
+	function advset_remove_widgets_from_menu() {
+	  $page = remove_submenu_page( 'themes.php', 'widgets.php' );
+	}
+	add_action( 'admin_menu', 'advset_remove_widgets_from_menu', 999 );
+}
 
 # auto post thumbnails
 if( advset_option('auto_thumbs') ) {
@@ -572,6 +632,7 @@ if( is_admin() && defined('WPLANG') && WPLANG=='pt_BR' ) {
 	
 	$advset_ptbr = array(
 		'Be careful, removing a filter can destabilize your system. For security reasons, no filter removal has efects over this page.' => 'Cuidado! Remover um filtro pode desestabilizar seu sistema. Por segurança, nenhum filtro removido terá efeito nesta página.',
+		'don\'t remove conditional IE comments like' => 'não remove os comentários condicionais do IE, exemplo:',
 		'Filters/Actions' => 'Filtros/Ações',
 		'Save changes' => 'Salvar alterações',
 		'width' => 'largura',
@@ -595,7 +656,10 @@ if( is_admin() && defined('WPLANG') && WPLANG=='pt_BR' ) {
 		'if zero resize to max height or dont resize if both is zero' => 'Se zero, redimenciona para largura máxima ou nada faz se os dois valores forem zero',
 		'if zero resize to max width or dont resize if both is zero' => 'Se zero, redimenciona para altura máxima ou nada faz se os dois valores forem zero',
 		'Insert author bio in each post' => 'Adicionar descrição do autor em cada post',
-		'Remove comments system' => 'Remover sistema de comentários',
+		'Unregister default WordPress widgets' => 'Remover widgets padrões do WordPress',
+		'removes some sql queries, this can make the database work faster' => 'remove algumas consultas ao banco de dados, isto pode fazer o sistema rodar um pouco mais rápido',
+		'Remove widget system' => 'Remover sistema de widgets',
+		'Remove comment system' => 'Remover sistema de comentários',
 		'Fix post type pagination' => 'Corrige paginação de "post types"',
 		'Disable Posts Auto Saving' => 'Desabilita função de auto-salvar',
 		'Compress all code' => 'Comprime todo o código',
@@ -847,9 +911,24 @@ function advset_page() { //$configs = get_option('powerconfigs'); ?>
 						
 						<br />
 						
+						<label for="remove_default_wp_widgets">
+							<input name="remove_default_wp_widgets" type="checkbox" id="remove_default_wp_widgets" value="1" <?php advset_check_if('remove_default_wp_widgets') ?> />
+							<?php _e('Unregister default WordPress widgets') ?> <i style="color:#999">(<?php _e('removes some sql queries, this can make the database work faster') ?>)</i>
+						</label>
+						
+						<br />
+						
+						<label for="remove_widget_system">
+							<input name="remove_widget_system" type="checkbox" id="remove_widget_system" value="1" <?php advset_check_if('remove_widget_system') ?> />
+							<?php _e('Remove widget system') ?> <i style="color:#999">(<?php _e('removes some sql queries, this can make the database work faster') ?>)</i>
+						</label>
+						
+						<br />
+						
 						<label for="remove_comments_system">
 							<input name="remove_comments_system" type="checkbox" id="remove_comments_system" value="1" <?php advset_check_if('remove_comments_system') ?> />
-							<?php _e('Remove comments system') ?></label>
+							<?php _e('Remove comment system') ?>
+						</label>
 						
 					</td>
 				</tr>
@@ -867,18 +946,27 @@ function advset_page() { //$configs = get_option('powerconfigs'); ?>
 						<br />
 						<? } else echo EMPTY_TRASH_DAYS;*/ ?>
 						
+						<label for="hide_update_message">
+							<input name="hide_update_message" type="checkbox" id="hide_update_message" value="1" <?php advset_check_if('hide_update_message') ?> />
+							<?php _e('Hide the WordPress update message in the Dashboard') ?>
+							</label>
+						
+						<br />
+						
 						<label for="post_type_pag">
 							<input name="post_type_pag" type="checkbox" id="post_type_pag" value="1" <?php advset_check_if('post_type_pag') ?> />
 							<?php _e('Fix post type pagination') ?>
 							</label>
 						
 						<br />
+						
 						<label for="disable_auto_save">
 							<input name="disable_auto_save" type="checkbox" id="disable_auto_save" value="1" <?php advset_check_if('disable_auto_save') ?> />
 							<?php _e('Disable Posts Auto Saving') ?>
 							</label>
 						
 						<br />
+						
 						<label for="feedburner">
 							FeedBurner: <input name="feedburner" type="text" size="12" id="feedburner" value="<?php echo advset_option('feedburner') ?>" />
 							</label>
@@ -902,7 +990,7 @@ function advset_page() { //$configs = get_option('powerconfigs'); ?>
 						<br />
 						<label for="remove_comments">
 							<input name="remove_comments" type="checkbox" id="remove_comments" value="1" <?php advset_check_if('remove_comments') ?> />
-							<?php _e('Remove all HTML comments') ?>
+							<?php _e('Remove all HTML comments') ?> <i style="color:#999">(<?php _e('don\'t remove conditional IE comments like') ?>: &lt;!--[if IE]&gt;)</i>
 							</label>
 					</td>
 				</tr>
