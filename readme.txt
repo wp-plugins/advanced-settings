@@ -1,12 +1,12 @@
 === Advanced Settings ===
 Contributors: webarthur
-Donate link: http://tutzstyle.com/donate/
-Author URI: http://tutzstyle.com/
-Plugin URI: http://tutzstyle.com/portfolio/advanced-settings/
-Tags: settings, hacks, option, admin, menu, page, image, setting, images, google, analytics, compress, html, thumbnail, post type, auto save, seo, keywords, favicon, feedburner, compact, comments, remove comments, hide comments, author, resize at upload, auto post thumbnails, filters, widget
+Donate link: http://zenstyle.com.br/donate/
+Author URI: http://zenstyle.com.br/
+Plugin URI: http://zenstyle.com.br/portfolio/advanced-settings/
+Tags: settings, hacks, option, admin, menu, page, image, setting, images, google, analytics, compress, html, thumbnail, post type, auto save, seo, keywords, favicon, feedburner, compact, comments, remove comments, hide comments, author, resize at upload, auto post thumbnails, filters, widget, postype
 Requires at least: 3.0
-Tested up to: 3.5.2
-Stable tag: 1.5.3
+Tested up to: 3.6
+Stable tag: 2.0
 License: GPLv2 or later
 Some advanced settings that are not provided by WordPress
 
@@ -14,6 +14,7 @@ Some advanced settings that are not provided by WordPress
 
 This is an essential plugin for your WordPress websites:
 
+* Manage Post Types
 * Disable The “Please Update Now” Message On WordPress Dashboard
 * Unregister default WordPress widgets
 * Remove widget system
@@ -44,7 +45,7 @@ This is an essential plugin for your WordPress websites:
 * and more to come ...
 
 Please, donate one or two dollars for the continuity of this and other open source projects:
-http://tutzstyle.com/donate/
+http://zenstyle.com.br/donate/
 
 "Simplicity is the ultimate sophistication" -- Da Vinci
 

@@ -1,19 +1,28 @@
 <?php
 /*
 Plugin Name: Advanced Settings
-Plugin URI: http://tutzstyle.com/portfolio/advanced-settings/
+Plugin URI: http://zenstyle.com.br/portfolio/advanced-settings/
 Description: Some advanced settings that are not provided by WordPress
 Author: Arthur Araújo
-Author URI: http://tutzstyle.com
-Version: 1.5.3
+Author URI: http://zenstyle.com.br
+Version: 2.0
 */
 
 # TO IMPLEMENT
 // Allow HTML in user profiles  
-// remove_filter('pre_user_description', 'wp_filter_kses');  
+// remove_filter('pre_user_description', 'wp_filter_kses');
+
+define('ADVSET_DIR', dirname(__FILE__));
+
+# THE ADMIN PAGE
+function advset_page_system() { include ADVSET_DIR.'/admin-system.php'; }
+function advset_page_code() { include ADVSET_DIR.'/admin-code.php'; }
+function advset_page_posttypes() { include ADVSET_DIR.'/admin-post-types.php'; }
+
+#include ADVSET_DIR.'/post-types.php';
 
 if( is_admin() ) {
-
+	
 	# Admin menu
 	add_action('admin_menu', 'advset_menu');
 
@@ -29,7 +38,9 @@ if( is_admin() ) {
 			if( !current_user_can('manage_options') )
 				return false;
 
-			$_POST['powerconfigs'] = $_POST;
+			$advset_options = get_option('powerconfigs');
+			
+			$_POST['powerconfigs'] = array_merge( $advset_options, $_POST );
 			unset(
 				$_POST['powerconfigs']['option_page'],
 				$_POST['powerconfigs']['action'],
@@ -93,8 +104,11 @@ function __show_sqlnum() {
 
 # ADMIN MENU
 function advset_menu() {
-	add_options_page(__('Advanced settings'), __('Advanced'), 'manage_options', 'advanced-settings', 'advset_page');
+	add_options_page(__('System'), __('System'), 'manage_options', 'advanced-settings-system', 'advset_page_system');
+	add_options_page(__('HTML Code'), __('HTML Code'), 'manage_options', 'advanced-settings-code', 'advset_page_code');
+	#add_options_page(__('Post Types'), __('Post Types'), 'manage_options', 'advanced-settings-post-types', 'advset_page_post_types');
 	add_options_page(__('Filters/Actions'), __('Filters/Actions'), 'manage_options', 'advanced-settings-filters', 'advset_page_filters');
+	add_options_page(__('Post Types'), __('Post Types'), 'manage_options', 'post-types', 'advset_page_posttypes');
 }
 
 # Add plugin option in Plugins page
@@ -362,7 +376,7 @@ if( advset_option('author_bio') ) {
 	add_filter('the_content', 'advset_author_bio');
 }
 
-# author_bio
+# author_bio_html
 if( advset_option('author_bio_html') )
 	remove_filter('pre_user_description', 'wp_filter_kses');
 
@@ -575,8 +589,51 @@ if( advset_option('auto_thumbs') ) {
 	
 }
 
+# excerpt length
+if( advset_option('excerpt_limit') ) {
+	function advset_excerpt_length_limit($length) {
+		return advset_option('excerpt_limit');
+	}
+	add_filter( 'excerpt_length', 'advset_excerpt_length_limit', 5 );
+}
 
-# author_bio
+# excerpt read more link
+if( advset_option('excerpt_more_text') ) {
+	function excerpt_read_more_link() {
+		return '... <a class="excerpt-read-more" href="' . get_permalink() . '">&nbsp;'.advset_option('excerpt_more_text').' +&nbsp;</a>';
+	}
+	add_filter('excerpt_more', 'excerpt_read_more_link');
+}
+
+# configure wp_title
+if( advset_option('config_wp_title') ) {
+	function advset_wp_title( $title, $sep ) {
+		global $paged, $page;
+		
+		if ( is_feed() )
+			return $title;
+		
+		// Add the site name.
+		$title .= get_bloginfo( 'name' );
+
+		// Add the site description for the home/front page.
+		$site_description = get_bloginfo( 'description', 'display' );
+		if ( $site_description && ( is_home() || is_front_page() ) )
+			$title = "$title $sep $site_description";
+
+		// Add a page number if necessary.
+		if ( $paged >= 2 || $page >= 2 )
+			$title = "$title $sep " . sprintf( __( 'Page %s', 'responsive' ), max( $paged, $page ) );
+
+		return $title;
+	}
+	add_filter( 'wp_title', 'advset_wp_title', 10, 2 );
+}
+
+
+
+
+# image sizes
 if( $_POST && (advset_option('max_image_size_w')>0 || advset_option('max_image_size_h')>0) ) {
 	
 	// From "Resize at Upload Plus" 1.3
@@ -632,7 +689,7 @@ if( is_admin() && defined('WPLANG') && WPLANG=='pt_BR' ) {
 	
 	$advset_ptbr = array(
 		'Be careful, removing a filter can destabilize your system. For security reasons, no filter removal has efects over this page.' => 'Cuidado! Remover um filtro pode desestabilizar seu sistema. Por segurança, nenhum filtro removido terá efeito nesta página.',
-		'don\'t remove conditional IE comments like' => 'não remove os comentários condicionais do IE, exemplo:',
+		'it\'s don\'t remove conditional IE comments like' => 'não remove os comentários condicionais do IE, exemplo:',
 		'Filters/Actions' => 'Filtros/Ações',
 		'Save changes' => 'Salvar alterações',
 		'width' => 'largura',
@@ -642,7 +699,7 @@ if( is_admin() && defined('WPLANG') && WPLANG=='pt_BR' ) {
 		'HTML Code output' => 'Saída do código HTML',
 		'Hide top admin menu' => 'Esconde menu de administrador do topo',
 		'Automatically add a FavIcon' => 'Adicionar um FavIcon automático para a página',
-		'when there is a favicon.ico or favicon.png file in the template folder' => 'sempre que houver um arquivo favicon.ico ou favicon.png na pasta do modelo',
+		'whenever there is a favicon.ico or favicon.png file in the template folder' => 'sempre que houver um arquivo favicon.ico ou favicon.png na pasta do modelo',
 		'Add a description meta tag using the blog description' => 'Adicionar uma meta tag de descrição usando a descrição do blog',
 		'Add description and keywords meta tags in each posts' => 'Adicionar uma meta tags de descrição e palavras-chave em cada post',
 		'Remove header WordPress generator meta tag' => 'Remover meta tag de "gerado pelo WordPress"',
@@ -657,18 +714,19 @@ if( is_admin() && defined('WPLANG') && WPLANG=='pt_BR' ) {
 		'if zero resize to max width or dont resize if both is zero' => 'Se zero, redimenciona para altura máxima ou nada faz se os dois valores forem zero',
 		'Insert author bio in each post' => 'Adicionar descrição do autor em cada post',
 		'Unregister default WordPress widgets' => 'Remover widgets padrões do WordPress',
-		'removes some sql queries, this can make the database work faster' => 'remove algumas consultas ao banco de dados, isto pode fazer o sistema rodar um pouco mais rápido',
-		'Remove widget system' => 'Remover sistema de widgets',
-		'Remove comment system' => 'Remover sistema de comentários',
+		'removing some SQL queries can do the database work faster' => 'remove algumas consultas ao banco de dados, isto pode fazer o sistema rodar um pouco mais rápido',
+		'Disable widget system' => 'Remover sistema de widgets',
+		'Disable comment system' => 'Remover sistema de comentários',
 		'Fix post type pagination' => 'Corrige paginação de "post types"',
 		'Disable Posts Auto Saving' => 'Desabilita função de auto-salvar',
 		'Compress all code' => 'Comprime todo o código',
 		'transformations of quotes to smart quotes, apostrophes, dashes, ellipses, the trademark symbol, and the multiplication symbol' => 'estilização de áspas, apóstrofos, elípses, traços, e multiplicação dos símbolos',
-		'Remove all HTML comments' => 'Remover todos os comentários em HTML',
+		'Remove HTML comments' => 'Remover todos os comentários em HTML',
 		'Display total number of executed SQL queries and page loading time' => 'Mostrar o total de SQLs executadas e o tempo de carregamento da página',
 		'only admin users can see this' => 'apenas administradores poderão ver',
 		'inserts a javascript code in the footer' => 'adicionar um código em javascript no final do código HTML',
-		'Allow HTML in user profiles' => 'Permitir códigos HTML na descrição de perfil dos usuários',
+		'Allow HTML in user profile' => 'Permitir códigos HTML na descrição de perfil do autor',
+		'Remove wptexturize filter' => 'Remove filtro de texturização',
 		//'' => '',
 	);
 }
@@ -712,6 +770,78 @@ function prefix_ajax_advset_filters() {
     return true;
 }
 
+# Post Types
+add_action( 'init', 'advset_register_post_types' );
+function advset_register_post_types() {
+	
+	$post_types = (array) get_option( 'adv_post_types', array() );
+	
+	#print_r($post_types);
+	#die();
+	
+	if( is_admin() && current_user_can('manage_options') && isset($_GET['delete_posttype']) ) {
+		unset($post_types[$_GET['delete_posttype']]);
+		update_option( 'adv_post_types', $post_types );
+	}
+	
+	if( is_admin() && current_user_can('manage_options') && isset($_POST['advset_action_posttype']) ) {
+		
+		extract($_POST);
+		
+		$labels = array(
+			'name' => $label,
+			#'singular_name' => @$singular_name,
+			#'add_new' => @$add_new,
+			#'add_new_item' => @$add_new_item,
+			#'edit_item' => @$edit_item,
+			#'new_item' => @$new_item,
+			#'all_items' => @$all_items,
+			#'view_item' => @$view_item,
+			#'search_items' => @$search_items,
+			#'not_found' =>  @$not_found,
+			#'not_found_in_trash' => @$not_found_in_trash, 
+			#'parent_item_colon' => @$parent_item_colon,
+			#'menu_name' => @$menu_name
+		);
+		
+		$post_types[$type] = array(
+			'labels' 		=> $labels,
+			'public' 		=> (bool)@$public,
+			'publicly_queryable' => (bool)@$publicly_queryable,
+			'show_ui' 		=> (bool)@$show_ui, 
+			'show_in_menu' 	=> (bool)@$show_in_menu, 
+			'query_var' 	=> (bool)@$query_var,
+			#'rewrite' 		=> array( 'slug' => 'book' ),
+			#'capability_type' => 'post',
+			'has_archive' 	=> (bool)@$has_archive, 
+			'hierarchical' 	=> (bool)@$hierarchical,
+			#'menu_position' => (int)@$menu_position,
+			'supports' 		=> (array)$supports,
+			'taxonomies' 	=> (array)$taxonomies,
+		);
+		
+		update_option( 'adv_post_types', $post_types );
+		
+	}
+	#print_r($post_types);
+	if( sizeof($post_types)>0 )
+		foreach( $post_types as $post_type=>$args ) {
+			register_post_type( $post_type, $args );
+			if( in_array( 'thumbnail', $args['supports'] ) ) {
+				add_theme_support( 'post-thumbnails', array( $post_type, 'post' ) );
+				/*global $_wp_theme_features;
+				
+				if( !is_array($_wp_theme_features[ 'post-thumbnails' ]) )
+					$_wp_theme_features[ 'post-thumbnails' ] = array();
+				
+				$_wp_theme_features[ 'post-thumbnails' ][0][]= $post_type;*/
+				
+				#print_r($_wp_theme_features[ 'post-thumbnails' ]);
+			}
+		}
+		
+}
+
 # THE ADMIN FILTERS PAGE
 function advset_page_filters() { ?>
 	
@@ -719,7 +849,7 @@ function advset_page_filters() { ?>
 		
 		<?php
 			$external_plugin_name = 'Advanced Settings';
-			$external_plugin_url = 'http://tutzstyle.com/portfolio/advanced-settings/';
+			$external_plugin_url = 'http://zenstyle.com.br/portfolio/advanced-settings/';
 		?>
 		<div style="float:right;width:400px">
 			<div style="float:right; margin-top:10px">
@@ -789,235 +919,3 @@ function advset_page_filters() { ?>
 	</div>
 	<?php
 }
-
-
-# THE ADMIN PAGE
-function advset_page() { //$configs = get_option('powerconfigs'); ?>
-	
-	<div class="wrap">
-		
-		<?php
-			$external_plugin_name = 'Advanced Settings';
-			$external_plugin_url = 'http://tutzstyle.com/portfolio/advanced-settings/';
-		?>
-		<div style="float:right;width:400px">
-			<div style="float:right; margin-top:10px">
-				 <iframe src="http://www.facebook.com/plugins/like.php?href=<?php echo urlencode($external_plugin_url) ?>&amp;layout=box_count&amp;show_faces=false&amp;width=450&amp;action=like&amp;font=arial&amp;colorscheme=light&amp;height=21"
-					scrolling="no" frameborder="0" style="overflow:hidden; width:90px; height:61px; margin:0 0 0 10px; float:right" allowTransparency="true"></iframe>
-					<strong style="line-height:25px;">
-						<?php echo __("Do you like <a href=\"{$external_plugin_url}\" target=\"_blank\">{$external_plugin_name}</a> Plugin? "); ?>
-					</strong>
-			</div>
-		</div>
-		
-		<div id="icon-options-general" class="icon32"><br></div>
-		<h2><?php _e('Advanced Settings'); ?></h2>
-		
-		<form action="options.php" method="post">
-			
-			<?php #wp_nonce_field('pc'); ?>
-			<?php settings_fields( 'advanced-settings' ); ?>
-			
-			<table class="form-table">
-				
-				<tr valign="top">
-					<th scope="row"><?php _e('Header'); ?></th>
-					<td>
-						<label for="remove_menu">
-
-							<input name="remove_menu" type="checkbox" id="remove_menu" value="1" <?php advset_check_if('remove_menu') ?>>
-							<?php _e('Hide top admin menu') ?> </label>
-						
-						<br />
-						<label for="favicon">
-							<input name="favicon" type="checkbox" id="favicon" value="1" <?php advset_check_if('favicon') ?> />
-							<?php _e('Automatically add a FavIcon') ?> <i style="color:#999">(<?php _e('when there is a favicon.ico or favicon.png file in the template folder') ?>)</i></label>
-							</label>
-						
-						<br />
-						<label for="description">
-							<input name="description" type="checkbox" id="description" value="1" <?php advset_check_if('description') ?> />
-							<?php _e('Add a description meta tag using the blog description') ?> (SEO)
-							</label>
-						
-						<br />
-						<label for="single_metas">
-							<input name="single_metas" type="checkbox" id="single_metas" value="1" <?php advset_check_if('single_metas') ?> />
-							<?php _e('Add description and keywords meta tags in each posts') ?> (SEO)
-							</label>
-						
-						<br />
-						<label for="remove_generator">
-							<input name="remove_generator" type="checkbox" id="remove_generator" value="1" <?php advset_check_if('remove_generator') ?> />
-							<?php _e('Remove header WordPress generator meta tag') ?> (html)</label>
-						
-						<br />
-						<label for="remove_wlw">
-							<input name="remove_wlw" type="checkbox" id="remove_wlw" value="1" <?php advset_check_if('remove_wlw') ?> />
-							<?php _e('Remove header WLW Manifest meta tag (Windows Live Writer link)') ?></label>
-					</td>
-					
-				<tr valign="top">
-					<th scope="row"><?php _e('Images'); ?></th>
-					<td>
-				
-						<label for="add_thumbs">
-							<?php
-							if( current_theme_supports('post-thumbnails') && !defined('ADVSET_THUMBS') ) {
-								echo '<i style="color:#999">['.__('Current theme already has post thumbnail support').']</i>';
-							} else {
-									?>
-								<input name="add_thumbs" type="checkbox" id="add_thumbs" value="1" <?php advset_check_if( 'add_thumbs' ) ?> />
-								<?php _e('Add thumbnail support') ?>
-							<?php } ?>
-						</label>
-						
-						<br />
-						<label for="auto_thumbs">
-							<input name="auto_thumbs" type="checkbox" id="auto_thumbs" value="1" <?php advset_check_if( 'auto_thumbs' ) ?> />
-							<?php _e('Automatically generate the Post Thumbnail') ?> <i style="color:#999">(<?php _e('from the first image in post') ?>)</i></label>
-						
-						<br />
-						<label for="jpeg_quality">
-							<?php _e('Set JPEG quality to') ?> <input name="jpeg_quality" type="text" size="2" maxlength="3" id="jpeg_quality" value="<?php echo (int) advset_option( 'jpeg_quality', 0) ?>" /> <i style="color:#999">(<?php _e('when send and resize images') ?>)</i></label>
-						
-						<br />
-						
-							<?php _e('Resize image at upload to max size') ?>:
-							<br />
-							<label for="max_image_size_w">
-							&nbsp; &nbsp; &bull; <?php _e('width') ?> (px) <input name="max_image_size_w" type="text" size="3" maxlength="5" id="max_image_size_w" value="<?php echo (int) advset_option( 'max_image_size_w', 0) ?>" />
-								<i style="color:#999">(<?php _e('if zero resize to max height or dont resize if both is zero') ?>)</i></label>
-							<label for="max_image_size_h">
-							<br />
-							&nbsp; &nbsp; &bull; <?php _e('height') ?> (px) <input name="max_image_size_h" type="text" size="3" maxlength="5" id="max_image_size_h" value="<?php echo (int) advset_option( 'max_image_size_h', 0) ?>" />
-								<i style="color:#999">(<?php _e('if zero resize to max width or dont resize if both is zero') ?>)</i></label>
-						
-					</td>
-				</tr>
-				
-				<tr valign="top">
-					<th scope="row"><?php _e('Contents'); ?></th>
-					<td>
-						<label for="author_bio">
-							<input name="author_bio" type="checkbox" id="author_bio" value="1" <?php advset_check_if('author_bio') ?> />
-							<?php _e('Insert author bio in each post') ?></label>			
-						
-						<br />
-						
-						<label for="author_bio_html">
-							<input name="author_bio_html" type="checkbox" id="author_bio_html" value="1" <?php advset_check_if('author_bio_html') ?> />
-							<?php _e('Allow HTML in user profiles') ?></label>			
-						
-						<br />
-						
-						<label for="remove_default_wp_widgets">
-							<input name="remove_default_wp_widgets" type="checkbox" id="remove_default_wp_widgets" value="1" <?php advset_check_if('remove_default_wp_widgets') ?> />
-							<?php _e('Unregister default WordPress widgets') ?> <i style="color:#999">(<?php _e('removes some sql queries, this can make the database work faster') ?>)</i>
-						</label>
-						
-						<br />
-						
-						<label for="remove_widget_system">
-							<input name="remove_widget_system" type="checkbox" id="remove_widget_system" value="1" <?php advset_check_if('remove_widget_system') ?> />
-							<?php _e('Remove widget system') ?> <i style="color:#999">(<?php _e('removes some sql queries, this can make the database work faster') ?>)</i>
-						</label>
-						
-						<br />
-						
-						<label for="remove_comments_system">
-							<input name="remove_comments_system" type="checkbox" id="remove_comments_system" value="1" <?php advset_check_if('remove_comments_system') ?> />
-							<?php _e('Remove comment system') ?>
-						</label>
-						
-					</td>
-				</tr>
-				
-				<tr valign="top">
-					<th scope="row"><?php _e('System'); ?></th>
-					<td>
-						<?php /*if( !defined('EMPTY_TRASH_DAYS') ) { ?>
-						<label for="empty_trash">
-							<?php _e('Posts stay in the trash for ') ?>
-							<input name="empty_trash" type="text" size="2" id="empty_trash" value="<?php echo advset_option('empty_trash') ?>" />
-							<?php _e('days') ?> <i style="color:#999">(<?php _e('To disable trash set the number of days to zero') ?>)</i>
-							</label>
-						
-						<br />
-						<? } else echo EMPTY_TRASH_DAYS;*/ ?>
-						
-						<label for="hide_update_message">
-							<input name="hide_update_message" type="checkbox" id="hide_update_message" value="1" <?php advset_check_if('hide_update_message') ?> />
-							<?php _e('Hide the WordPress update message in the Dashboard') ?>
-							</label>
-						
-						<br />
-						
-						<label for="post_type_pag">
-							<input name="post_type_pag" type="checkbox" id="post_type_pag" value="1" <?php advset_check_if('post_type_pag') ?> />
-							<?php _e('Fix post type pagination') ?>
-							</label>
-						
-						<br />
-						
-						<label for="disable_auto_save">
-							<input name="disable_auto_save" type="checkbox" id="disable_auto_save" value="1" <?php advset_check_if('disable_auto_save') ?> />
-							<?php _e('Disable Posts Auto Saving') ?>
-							</label>
-						
-						<br />
-						
-						<label for="feedburner">
-							FeedBurner: <input name="feedburner" type="text" size="12" id="feedburner" value="<?php echo advset_option('feedburner') ?>" />
-							</label>
-					</td>
-				</tr>
-				
-				<tr valign="top">
-					<th scope="row"><?php _e('HTML Code output'); ?></th>
-					<td>
-						<label for="compress">
-							<input name="compress" type="checkbox" id="compress" value="1" <?php advset_check_if('compress') ?> />
-							<?php _e('Compress all code') ?>
-							</label>
-						
-						<br />
-						<label for="remove_wptexturize">
-							<input name="remove_wptexturize" type="checkbox" id="remove_wptexturize" value="1" <?php advset_check_if('remove_wptexturize') ?> />
-							<?php _e('Remove "texturize"') ?> <i style="color:#999">(<?php _e('transformations of quotes to smart quotes, apostrophes, dashes, ellipses, the trademark symbol, and the multiplication symbol') ?>)</i>
-							</label>
-						
-						<br />
-						<label for="remove_comments">
-							<input name="remove_comments" type="checkbox" id="remove_comments" value="1" <?php advset_check_if('remove_comments') ?> />
-							<?php _e('Remove all HTML comments') ?> <i style="color:#999">(<?php _e('don\'t remove conditional IE comments like') ?>: &lt;!--[if IE]&gt;)</i>
-							</label>
-					</td>
-				</tr>
-				
-				<tr valign="top">
-					<th scope="row"><?php _e('Footer'); ?></th>
-					<td>
-						<label for="show_query_num">
-							<input name="show_query_num" type="checkbox" id="show_query_num" value="1" <?php advset_check_if('show_query_num') ?> />
-							<?php _e('Display total number of executed SQL queries and page loading time <i style="color:#999">(only admin users can see this)') ?></i>
-							</label>
-						
-						<br />
-						<label for="analytics">
-							<?php _e('Google Analytics ID:') ?> <input name="analytics" type="text" size="12" id="analytics" value="<?php echo advset_option('analytics') ?>" />
-							<i style="color:#999">(<?php _e('inserts a javascript code in the footer') ?>)</i>
-							</label>
-
-					</td>
-				</tr>
-				
-			</table>
-			
-			<p class="submit"><input type="submit" name="submit" id="submit" class="button-primary" value="<?php _e('Save changes') ?>"></p>	
-		</form>
-	</div>
-	<?php
-}
-
-?>
