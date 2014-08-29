@@ -4,7 +4,7 @@
 	
 	<?php
 		$external_plugin_name = 'Advanced Settings';
-		$external_plugin_url = 'http://zenstyle.com.br/portfolio/advanced-settings/';
+		$external_plugin_url = ADVSET_URL;
 	?>
 	<div style="float:right;width:400px">
 		<div style="float:right; margin-top:10px">
@@ -21,7 +21,8 @@
 	
 	<form action="options.php" method="post">
 		
-		<?php #wp_nonce_field('pc'); ?>
+		<input type="hidden" name="advset_group" value="code" />
+		
 		<?php settings_fields( 'advanced-settings' ); ?>
 		
 		<table class="form-table">
@@ -29,6 +30,12 @@
 			<tr valign="top">
 				<th scope="row"><?php _e('Header'); ?></th>
 				<td>
+					<label for="facebook_og_metas">
+
+						<input name="facebook_og_metas" type="checkbox" id="facebook_og_metas" value="1" <?php advset_check_if('facebook_og_metas') ?>>
+						<?php _e('Fix incorrect Facebook thumbnails including OG metas') ?> </label>
+					
+					<br />
 					<label for="remove_menu">
 
 						<input name="remove_menu" type="checkbox" id="remove_menu" value="1" <?php advset_check_if('remove_menu') ?>>
@@ -61,6 +68,16 @@
 					<label for="remove_wlw">
 						<input name="remove_wlw" type="checkbox" id="remove_wlw" value="1" <?php advset_check_if('remove_wlw') ?> />
 						<?php _e('Remove header WLW Manifest meta tag (Windows Live Writer link)') ?></label>
+
+					<br />
+					<label for="remove_rsd">
+						<input name="remove_rsd" type="checkbox" id="remove_rsd" value="1" <?php advset_check_if('remove_rsd') ?> />
+						<?php _e('Remove header RSD (Weblog Client Link) meta tag') ?></label>
+
+					<br />
+					<label for="remove_shortlink">
+						<input name="remove_shortlink" type="checkbox" id="remove_shortlink" value="1" <?php advset_check_if('remove_shortlink') ?> />
+						<?php _e('Remove header shortlink meta tag') ?></label>
 
 					<br />
 					<label for="config_wp_title">
@@ -111,6 +128,23 @@
 				</td>
 			</tr>
 
+			<tr valign="top">
+				<th scope="row"><?php _e('Scripts'); ?></th>
+				<td>
+					<label for="jquery_remove_migrate">
+						<input name="jquery_remove_migrate" type="checkbox" id="jquery_remove_migrate" value="1" <?php advset_check_if('jquery_remove_migrate') ?> />
+						<?php _e('Remove unnecessary jQuery migrate script (jquery-migrate.min.js)') ?>
+						</label>
+					
+					<br />
+					<label for="jquery_cnd">
+						<input name="jquery_cnd" type="checkbox" id="jquery_cnd" value="1" <?php advset_check_if('jquery_cnd') ?> />
+						<?php _e('Include jQuery Google CDN instead local script (version 1.11.0)') ?>
+						</label>
+
+				</td>
+			</tr>
+			
 			<tr valign="top">
 				<th scope="row"><?php _e('Optimize'); ?></th>
 				<td>

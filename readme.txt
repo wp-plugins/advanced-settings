@@ -1,14 +1,14 @@
 === Advanced Settings ===
 Contributors: webarthur
-Donate link: http://zenstyle.com.br/donate/
-Author URI: http://zenstyle.com.br/
-Plugin URI: http://zenstyle.com.br/portfolio/advanced-settings/
-Tags: settings, hacks, option, admin, menu, page, image, setting, images, google, analytics, compress, html, thumbnail, post type, auto save, seo, keywords, favicon, feedburner, compact, comments, remove comments, hide comments, author, resize at upload, auto post thumbnails, filters, widget, postype
+Donate link: http://tutzstyle.com/donate/
+Author URI: http://tutzstyle.com/
+Plugin URI: http://tutzstyle.com/portfolio/advanced-settings/
+Tags: settings, hacks, option, admin, menu, page, image, setting, images, google, analytics, compress, html, thumbnail, post type, auto save, seo, keywords, favicon, feedburner, compact, comments, remove comments, hide comments, author, resize at upload, auto post thumbnails, filters, widget, postype, cdn
 Requires at least: 3.0
-Tested up to: 3.6
-Stable tag: 2.0
+Tested up to: 3.9.1
+Stable tag: 2.1
 License: GPLv2 or later
-Some advanced settings that are not provided by WordPress
+Get advanced settings and change all you imagine that are not provided by WordPress.
 
 == Description ==
 
@@ -16,6 +16,7 @@ This is an essential plugin for your WordPress websites:
 
 * Manage Post Types
 * Disable The “Please Update Now” Message On WordPress Dashboard
+* Fix incorrect Facebook thumbnails including OG metas
 * Unregister default WordPress widgets
 * Remove widget system
 * Remove a specific system action or filter
@@ -30,11 +31,15 @@ This is an essential plugin for your WordPress websites:
 * Hide top WP admin bar
 * Remove HTML comments
 * Easy FeedBurner configuration
+* Include jQuery Google CDN
+* Remove unnecessary jQuery migrate script
 * Compact HTML code
 * Disable Posts Auto Saving
 * Insert google analytics code
-* Remove header WordPress generator tag
-* Remove header WLW Manifest tag
+* Remove header WordPress generator meta tag
+* Remove header WLW Manifest meta tag
+* Remove header RSD meta tag
+* Remove header Shortlink meta tag
 * Display total number of executed SQL queries
 * Display page loading time
 * Remove "texturize" (remove wptexturize filters)
@@ -42,16 +47,17 @@ This is an essential plugin for your WordPress websites:
 * Set JPEG quality
 * Fix post type pagination 
 * Display total number of executed SQL queries
+* Remove any filter you want
 * and more to come ...
 
 Please, donate one or two dollars for the continuity of this and other open source projects:
-http://zenstyle.com.br/donate/
+http://tutzstyle.com/donate/
 
 "Simplicity is the ultimate sophistication" -- Da Vinci
 
 == Installation ==
 
-Upload plugin to your blog, activate it, then click on the Settings > Advanced on the menu.
+Upload plugin to your blog, activate it, then click on a setting options in admin menu (system, html code, post types and filters/actions).
 
 
 == Screenshots ==
@@ -62,6 +68,18 @@ Upload plugin to your blog, activate it, then click on the Settings > Advanced o
 
 
 == Changelog ==
+
+= 2.1 =
+* Fix update options bug
+* Remove unnecessary jQuery migrate script (jquery-migrate.min.js)
+* Include jQuery Google CDN instead local script (version 1.11.0)
+* Fix incorrect Facebook thumbnails including OG metas
+* Remove header RSD (Weblog Client Link) meta tag 
+* Remove header shortlink meta tag
+* Fix delete link in post types admin page
+
+= 2.0 =
+* Organized admin menu creating new menu options
 
 = 1.5.3 =
 * Disable The “Please Update Now” Message On WordPress Dashboard

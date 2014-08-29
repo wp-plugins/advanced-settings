@@ -1,64 +1,80 @@
 <?php
 /*
 Plugin Name: Advanced Settings
-Plugin URI: http://zenstyle.com.br/portfolio/advanced-settings/
-Description: Some advanced settings that are not provided by WordPress
+Plugin URI: http://tutzstyle.com/portfolio/advanced-settings/
+Description: Get advanced settings and change all you imagine that are not provided by WordPress.
 Author: Arthur Araújo
-Author URI: http://zenstyle.com.br
-Version: 2.0
+Author URI: http://tutzstyle.com
+Version: 2.1
 */
 
-# TO IMPLEMENT
-// Allow HTML in user profiles  
-// remove_filter('pre_user_description', 'wp_filter_kses');
-
 define('ADVSET_DIR', dirname(__FILE__));
+
+// update_option('bkp_pc', get_option('powerconfigs'));
 
 # THE ADMIN PAGE
 function advset_page_system() { include ADVSET_DIR.'/admin-system.php'; }
 function advset_page_code() { include ADVSET_DIR.'/admin-code.php'; }
 function advset_page_posttypes() { include ADVSET_DIR.'/admin-post-types.php'; }
 
-#include ADVSET_DIR.'/post-types.php';
-
 if( is_admin() ) {
 	
+	define('ADVSET_URL', 'http://tutzstyle.com/portfolio/advanced-settings/');
+
 	# Admin menu
 	add_action('admin_menu', 'advset_menu');
 
 	# Add plugin option in Plugins page
 	add_filter( 'plugin_action_links', 'advset_plugin_action_links', 10, 2 );
+	
+	if( $settings=get_option('powerconfigs') ) {
+		update_option('advset_code', $settings);
+		update_option('advset_system', $settings);
+		update_option('advset_remove_filters', $settings['remove_filters']);
+		delete_option('powerconfigs');
+	}
 
 	// update settings
 	if( isset($_POST['option_page']) && $_POST['option_page']=='advanced-settings' ) {
-	
+		
 		function advset_update() {
-			
+
 			// security
 			if( !current_user_can('manage_options') )
-				return false;
+				return;
 
-			$advset_options = get_option('powerconfigs');
+			// define option name
+			$setup_name = 'advset_'.$_POST['advset_group'];
 			
-			$_POST['powerconfigs'] = array_merge( $advset_options, $_POST );
+			// get configuration
+			// $advset_options=get_option($setup_name);
+			
+			// prepare option group
+			$_POST[$setup_name] = $_POST;
+			
+			/*$_POST[$setup_name] = array_merge( $advset_options, $_POST );*/
+			
 			unset(
-				$_POST['powerconfigs']['option_page'],
-				$_POST['powerconfigs']['action'],
-				$_POST['powerconfigs']['_wpnonce'],
-				$_POST['powerconfigs']['_wp_http_referer'],
-				$_POST['powerconfigs']['submit']
+				$_POST[$setup_name]['option_page'],
+				$_POST[$setup_name]['action'],
+				$_POST[$setup_name]['_wpnonce'],
+				$_POST[$setup_name]['_wp_http_referer'],
+				$_POST[$setup_name]['submit']
 			);
 			
-			if( $_POST['powerconfigs']['auto_thumbs'] )
-				$_POST['powerconfigs']['add_thumbs'] = '1';
+			if( $_POST[$setup_name]['auto_thumbs'] )
+				$_POST[$setup_name]['add_thumbs'] = '1';
 			
-			if( $_POST['powerconfigs']['remove_widget_system'] )
-				$_POST['powerconfigs']['remove_default_wp_widgets'] = '1';
+			if( $_POST[$setup_name]['remove_widget_system'] )
+				$_POST[$setup_name]['remove_default_wp_widgets'] = '1';
 			
-			$_POST['powerconfigs']['remove_filters'] = advset_option( 'remove_filters' );
+			// $_POST[$setup_name]['remove_filters'] = advset_option( 'remove_filters' );
+			
+			//print_r($_POST[$setup_name]);
+			///die();
 			
 			// save settings
-			register_setting( 'advanced-settings', 'powerconfigs' );
+			register_setting( 'advanced-settings', $setup_name );
 			
 		}
 		add_action( 'admin_init', 'advset_update' );
@@ -66,24 +82,12 @@ if( is_admin() ) {
 	
 }
 
-// save a advanced-settings option (using only by admin filters page)
-function advset_save_option( $option_name, $value='' ) {
-	global $advset_options;
-	
-	if( !isset($advset_options) )
-		$advset_options = get_option('powerconfigs');
-	
-	$advset_options[$option_name] = $value;
-	
-	update_option( 'powerconfigs', $advset_options );
-}
-
 // get a advanced-settings option
 function advset_option( $option_name, $default='' ) {
 	global $advset_options;
 	
 	if( !isset($advset_options) )
-		$advset_options = get_option('powerconfigs');
+		$advset_options = get_option('advset_code')+get_option('advset_system');
 	
 	if( isset($advset_options[$option_name]) )
 		return $advset_options[$option_name];
@@ -120,9 +124,6 @@ function advset_plugin_action_links( $links, $file ) {
 	return $links;
 }
 
-//$configs = get_option('powerconfigs');
-#print_r($configs);
-
 # Disable The “Please Update Now” Message On WordPress Dashboard
 if ( advset_option('hide_update_message') ) {
   add_action( 'admin_menu', create_function( null, "remove_action( 'admin_notices', 'update_nag', 3 );" ), 2 );
@@ -135,7 +136,6 @@ if( advset_option('remove_menu') )
 # Configure FeedBurner
 if( advset_option('feedburner') ) {
 	function appthemes_custom_rss_feed( $output, $feed ) {
-		//$configs = get_option('powerconfigs');
 		
 		if ( strpos( $output, 'comments' ) )
 			return $output;
@@ -163,7 +163,6 @@ if( advset_option('favicon') ) {
 # Add blog description meta tag
 if( advset_option('description') ) {
 	function __advsettings_blog_description() {
-		//$configs = get_option('powerconfigs');
 		if(is_home() || !advset_option('single_metas'))
 			echo '<meta name="description" content="'.get_bloginfo('description').'" />'."\r\n";
 	}
@@ -318,7 +317,6 @@ if( advset_option('remove_comments_system') ) {
 if( advset_option('analytics') ) {
 	add_action('wp_footer', '____analytics'); // Load custom styles
 	function ____analytics(){ 
-		//$configs = get_option('powerconfigs');
 		echo '<script type="text/javascript">
 var _gaq = _gaq || [];_gaq.push([\'_setAccount\', \''.advset_option('analytics').'\']);_gaq.push([\'_trackPageview\']);
 (function() {
@@ -605,6 +603,49 @@ if( advset_option('excerpt_more_text') ) {
 	add_filter('excerpt_more', 'excerpt_read_more_link');
 }
 
+# remove jquery migrate script
+if( !is_admin() && advset_option('jquery_remove_migrate') ) {
+	function advset_remove_jquery_migrate(&$scripts) {
+		$scripts->remove( 'jquery');
+		$scripts->add( 'jquery', false, array( 'jquery-core' ), '1.10.2' );
+	}
+	add_action('wp_default_scripts', 'advset_remove_jquery_migrate');
+}
+
+# include jquery google cdn instead local script
+if( advset_option('jquery_cnd') ) {
+	function advset_jquery_cnd() {
+		wp_deregister_script('jquery');
+		wp_register_script('jquery', ("//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"), false);
+		wp_enqueue_script('jquery');
+	}
+	add_action('wp_enqueue_scripts', 'advset_jquery_cnd');
+}
+
+# facebook og metas
+if( !is_admin() && advset_option('facebook_og_metas') ) {
+	function advset_facebook_og_metas() {
+		global $post;
+		if (is_single() || is_page()) { ?>
+			<meta property="og:title" content="<?php single_post_title(''); ?>" />  
+			<meta property="og:description" content="<?php echo strip_tags(get_the_excerpt($post->ID)); ?>" />  
+			<meta property="og:type" content="article" />  
+			<meta property="og:image" content="<?php if (function_exists('wp_get_attachment_thumb_url')) {echo wp_get_attachment_url(get_post_thumbnail_id($post->ID)); }?>" />
+		<?php }
+	}
+	add_action('wp_head', 'advset_facebook_og_metas');
+}
+
+# remove shortlink metatag
+if( !is_admin() && advset_option('remove_shortlink') ) {
+	remove_action( 'wp_head', 'wp_shortlink_wp_head');
+}
+
+# remove rsd metatag
+if( !is_admin() && advset_option('remove_rsd') ) {
+	remove_action ('wp_head', 'rsd_link');
+}
+
 # configure wp_title
 if( advset_option('config_wp_title') ) {
 	function advset_wp_title( $title, $sep ) {
@@ -670,7 +711,7 @@ if( $_POST && (advset_option('max_image_size_w')>0 || advset_option('max_image_s
 }
 
 # remove filters if not in filters admin page
-$remove_filters = advset_option( 'remove_filters' );
+$remove_filters = get_option( 'advset_remove_filters' );
 if( !isset($_GET['page'])
 	|| $_GET['page']!='advanced-settings-filters' && is_array($remove_filters) ) {
 	
@@ -727,6 +768,12 @@ if( is_admin() && defined('WPLANG') && WPLANG=='pt_BR' ) {
 		'inserts a javascript code in the footer' => 'adicionar um código em javascript no final do código HTML',
 		'Allow HTML in user profile' => 'Permitir códigos HTML na descrição de perfil do autor',
 		'Remove wptexturize filter' => 'Remove filtro de texturização',
+		'Remove unnecessary jQuery migrate script (jquery-migrate.min.js)' => 'Remove desnecessário script de migração de versão do jQuery (jquery-migrate.min.js)',
+		'Include jQuery Google CDN instead local script (version 1.11.0)' => 'Inclui script jQuery do CDN do Google ao invés de usar arquivo local (versão 1.11.0)',
+		'Fix incorrect Facebook thumbnails including OG metas' => 'Corrigir miniaturas do Facebook incluindo metas OG',
+		'Remove header RSD (Weblog Client Link) meta tag' => 'Remover meta tag de RSD (Weblog Client Link)',
+		'Remove header shortlink meta tag' => 'Remover meta tag de shortlink',
+		'Remove header WLW Manifest meta tag (Windows Live Writer link)' => 'Remover meta tag de WLW Manifest (Windows Live Writer link)',
 		//'' => '',
 	);
 }
@@ -754,7 +801,7 @@ function prefix_ajax_advset_filters() {
     if( !current_user_can('manage_options') )
 		return false;
     
-    $remove_filters = (array) advset_option( 'remove_filters' );
+    $remove_filters = (array) get_option( 'advset_remove_filters' );
     $tag = (string)$_POST['tag'];
     $function = (string)$_POST['function'];
     
@@ -763,7 +810,7 @@ function prefix_ajax_advset_filters() {
     else if ( $_POST['enable']=='false' )
 		$remove_filters[$tag][$function] = 1;
     
-    advset_save_option( 'remove_filters', $remove_filters );
+    update_option( 'advset_remove_filters', $remove_filters );
     
     //echo $_POST['enable'];
     
@@ -849,7 +896,7 @@ function advset_page_filters() { ?>
 		
 		<?php
 			$external_plugin_name = 'Advanced Settings';
-			$external_plugin_url = 'http://zenstyle.com.br/portfolio/advanced-settings/';
+			$external_plugin_url = 'http://tutzstyle.com/portfolio/advanced-settings/';
 		?>
 		<div style="float:right;width:400px">
 			<div style="float:right; margin-top:10px">
@@ -874,7 +921,7 @@ function advset_page_filters() { ?>
 		$hook=$wp_filter;
 		ksort($hook);
 		
-		$remove_filters = (array) advset_option( 'remove_filters' );
+		$remove_filters = (array) get_option( 'advset_remove_filters' );
 		
 		//print_r($remove_filters);
 		

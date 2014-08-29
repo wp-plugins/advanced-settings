@@ -95,7 +95,7 @@
 		
 		<?php
 			$external_plugin_name = 'Advanced Settings';
-			$external_plugin_url = 'http://zenstyle.com.br/portfolio/advanced-settings/';
+			$external_plugin_url = ADVSET_URL;
 		?>
 		<div style="float:right;width:400px">
 			<div style="float:right; margin-top:10px">
@@ -238,7 +238,7 @@
 					  <span class="edit">
 						<a href="#" onclick="show_form('<?php echo $post_type->name ?>');">Edit</a> 
 					  </span>
-							| <a href="options-general.php?page=advanced-settings-post-types&delete_posttype=<?php echo $post_type->name ?>" title="default categories" class="thickbox">delete</a>
+							| <a href="options-general.php?page=post-types&delete_posttype=<?php echo $post_type->name ?>" title="default categories" class="thickbox">delete</a>
 						<?php } else echo '&nbsp;'; ?>
 									   
 					</div>
