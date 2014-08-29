@@ -4,7 +4,7 @@
 	
 	<?php
 		$external_plugin_name = 'Advanced Settings';
-		$external_plugin_url = 'http://zenstyle.com.br/portfolio/advanced-settings/';
+		$external_plugin_url = ADVSET_URL;
 	?>
 	<div style="float:right;width:400px">
 		<div style="float:right; margin-top:10px">
@@ -21,7 +21,8 @@
 	
 	<form action="options.php" method="post">
 		
-		<?php #wp_nonce_field('pc'); ?>
+		<input type="hidden" name="advset_group" value="system" />
+		
 		<?php settings_fields( 'advanced-settings' ); ?>
 		
 		<table class="form-table">
