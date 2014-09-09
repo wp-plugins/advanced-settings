@@ -5,7 +5,7 @@ Plugin URI: http://tutzstyle.com/portfolio/advanced-settings/
 Description: Get advanced settings and change all you imagine that are not provided by WordPress.
 Author: Arthur Araújo
 Author URI: http://tutzstyle.com
-Version: 2.1
+Version: 2.2
 */
 
 define('ADVSET_DIR', dirname(__FILE__));
@@ -87,7 +87,7 @@ function advset_option( $option_name, $default='' ) {
 	global $advset_options;
 	
 	if( !isset($advset_options) )
-		$advset_options = get_option('advset_code')+get_option('advset_system');
+		$advset_options = get_option('advset_code', array())+get_option('advset_system', array());
 	
 	if( isset($advset_options[$option_name]) )
 		return $advset_options[$option_name];
