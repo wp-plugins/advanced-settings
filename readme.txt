@@ -3,10 +3,10 @@ Contributors: webarthur
 Donate link: http://tutzstyle.com/donate/
 Author URI: http://tutzstyle.com/
 Plugin URI: http://tutzstyle.com/portfolio/advanced-settings/
-Tags: settings, hacks, option, admin, menu, page, image, setting, images, google, analytics, compress, html, thumbnail, post type, auto save, seo, keywords, favicon, feedburner, compact, comments, remove comments, hide comments, author, resize at upload, auto post thumbnails, filters, widget, postype, cdn
+Tags: settings, hacks, option, admin, menu, page, image, setting, images, google, analytics, compress, html, thumbnail, post type, auto save, seo, keywords, favicon, feedburner, compact, comments, remove comments, hide comments, author, resize at upload, auto post thumbnails, filters, widget, postype
 Requires at least: 3.0
 Tested up to: 3.9.1
-Stable tag: 2.1
+Stable tag: 2.2
 License: GPLv2 or later
 Get advanced settings and change all you imagine that are not provided by WordPress.
 
@@ -68,6 +68,9 @@ Upload plugin to your blog, activate it, then click on a setting options in admi
 
 
 == Changelog ==
+
+= 2.2 =
+* Fix migrate bug on update
 
 = 2.1 =
 * Fix update options bug
