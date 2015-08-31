@@ -1,11 +1,11 @@
 <?php
 /*
 Plugin Name: Advanced Settings
-Plugin URI: http://tutzstyle.com/portfolio/advanced-settings/
+Plugin URI: http://araujo.cc/wordpress/advanced-settings/
 Description: Get advanced settings and change all you imagine that are not provided by WordPress.
 Author: Arthur Araújo
-Author URI: http://tutzstyle.com
-Version: 2.2
+Author URI: http://araujo.cc
+Version: 2.2.1
 */
 
 define('ADVSET_DIR', dirname(__FILE__));
@@ -19,7 +19,7 @@ function advset_page_posttypes() { include ADVSET_DIR.'/admin-post-types.php'; }
 
 if( is_admin() ) {
 	
-	define('ADVSET_URL', 'http://tutzstyle.com/portfolio/advanced-settings/');
+	define('ADVSET_URL', 'http://araujo.cc/wordpress/advanced-settings/');
 
 	# Admin menu
 	add_action('admin_menu', 'advset_menu');
@@ -896,7 +896,7 @@ function advset_page_filters() { ?>
 		
 		<?php
 			$external_plugin_name = 'Advanced Settings';
-			$external_plugin_url = 'http://tutzstyle.com/portfolio/advanced-settings/';
+			$external_plugin_url = 'http://araujo.cc/wordpress/advanced-settings/';
 		?>
 		<div style="float:right;width:400px">
 			<div style="float:right; margin-top:10px">
