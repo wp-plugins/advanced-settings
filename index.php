@@ -118,7 +118,7 @@ function advset_menu() {
 # Add plugin option in Plugins page
 function advset_plugin_action_links( $links, $file ) {
 	if ( $file == plugin_basename( basename(dirname(__FILE__)).'/index.php' ) ) {
-		$links[] = '<a href="options-general.php?page=advanced-settings">'.__('Settings').'</a>';
+		$links[] = '<a href="options-general.php?page=advanced-settings-system">'.__('Settings').'</a>';
 	}
 
 	return $links;
