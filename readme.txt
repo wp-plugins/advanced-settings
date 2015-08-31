@@ -1,12 +1,11 @@
 === Advanced Settings ===
 Contributors: webarthur
-Donate link: http://tutzstyle.com/donate/
-Author URI: http://tutzstyle.com/
-Plugin URI: http://tutzstyle.com/portfolio/advanced-settings/
+Author URI: http://araujo.cc/
+Plugin URI: http://araujo.cc/wordpress/advanced-settings/
 Tags: settings, hacks, option, admin, menu, page, image, setting, images, google, analytics, compress, html, thumbnail, post type, auto save, seo, keywords, favicon, feedburner, compact, comments, remove comments, hide comments, author, resize at upload, auto post thumbnails, filters, widget, postype
 Requires at least: 3.0
 Tested up to: 3.9.1
-Stable tag: 2.2
+Stable tag: 2.2.1
 License: GPLv2 or later
 Get advanced settings and change all you imagine that are not provided by WordPress.
 
@@ -50,8 +49,7 @@ This is an essential plugin for your WordPress websites:
 * Remove any filter you want
 * and more to come ...
 
-Please, donate one or two dollars for the continuity of this and other open source projects:
-http://tutzstyle.com/donate/
+Contribute on github: [github.com/webarthur/advanced-settings](https://github.com/webarthur/advanced-settings)
 
 "Simplicity is the ultimate sophistication" -- Da Vinci
 
@@ -68,6 +66,11 @@ Upload plugin to your blog, activate it, then click on a setting options in admi
 
 
 == Changelog ==
+
+= 2.2.1 =
+* Fix delete posttype bug
+* Update plugin links
+* Add Git repository
 
 = 2.2 =
 * Fix migrate bug on update
@@ -112,10 +115,3 @@ Upload plugin to your blog, activate it, then click on a setting options in admi
 = 1.4.3 =
 * Code compactor now skips the &lt;pre> tag
 
-
-== Donate ==
-
-Donate one or two dollars. May seem very little money but it's very important for me. Thank you!
-
-* PayPal: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=LJ9MZJJ5DPGML
-* PagSeguro UOL: https://pagseguro.uol.com.br/checkout/v2/donation.html?receiverEmail=tutzstyle@gmail.com&currency=BRL
